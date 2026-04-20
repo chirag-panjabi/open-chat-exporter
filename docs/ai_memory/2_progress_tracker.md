@@ -36,3 +36,7 @@
 ## Phase 8: Adapter (Instagram JSON)
 - [x] **Task 8.1:** Write `src/adapters/instagram/InstagramJsonAdapter.ts` using streaming JSON parsing over `messages[]`.
 - [x] **Task 8.2:** Wire `--platform INSTAGRAM` into the CLI and add a synthetic fixture + smoke test.
+
+## Phase 9: Adapter (Snapchat JSON)
+- [x] **Task 9.1:** Write `src/adapters/snapchat/SnapchatJsonAdapter.ts` using streaming JSON parsing (Snapchat `chat_history.json`).
+- [x] **Task 9.2:** Wire `--platform SNAPCHAT` into the CLI and add a synthetic fixture + smoke test.

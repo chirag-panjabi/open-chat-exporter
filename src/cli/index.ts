@@ -3,6 +3,7 @@ import { DiscordJsonAdapter } from '../adapters/discord/DiscordJsonAdapter';
 import { FacebookMessengerJsonAdapter } from '../adapters/fb_messenger/FacebookMessengerJsonAdapter';
 import { InstagramJsonAdapter } from '../adapters/instagram/InstagramJsonAdapter';
 import { NoopAdapter } from '../adapters/noop/NoopAdapter';
+import { SnapchatJsonAdapter } from '../adapters/snapchat/SnapchatJsonAdapter';
 import { TelegramJsonAdapter } from '../adapters/telegram/TelegramJsonAdapter';
 import { WhatsAppTxtAdapter } from '../adapters/whatsapp/WhatsAppTxtAdapter';
 import type { AdapterInput } from '../core/BaseAdapter';
@@ -142,6 +143,8 @@ async function main(): Promise<void> {
         ? new FacebookMessengerJsonAdapter()
         : platform === Platform.INSTAGRAM
           ? new InstagramJsonAdapter()
+          : platform === Platform.SNAPCHAT
+            ? new SnapchatJsonAdapter()
       : platform === Platform.TELEGRAM
         ? new TelegramJsonAdapter()
         : platform === Platform.WHATSAPP

@@ -1,0 +1,33 @@
+{
+  "Chat History": [
+    {
+      "Created": "2026-04-19T10:00:00Z",
+      "From": "Alice",
+      "To": "Bob",
+      "Text": "Hello from Snapchat fixture.",
+      "Media Type": "TEXT"
+    },
+    {
+      "Created": "2026-04-19T10:01:00Z",
+      "From": "Bob",
+      "To": "Alice",
+      "Text": "(media omitted)",
+      "Media Type": "PHOTO"
+    },
+    {
+      "Created": "2026-04-19T10:02:00Z",
+      "From": "Alice",
+      "To": "Bob",
+      "Text": "Ok",
+      "Media Type": "TEXT"
+    },
+    {
+      "Created": "2026-04-19T10:03:00Z",
+      "From": "System",
+      "To": "Alice",
+      "Text": "Bob joined the chat",
+      "Type": "SYSTEM",
+      "Media Type": "TEXT"
+    }
+  ]
+}
