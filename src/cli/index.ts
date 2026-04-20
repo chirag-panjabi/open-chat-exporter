@@ -1,6 +1,7 @@
 import { basename } from 'node:path';
 import { DiscordJsonAdapter } from '../adapters/discord/DiscordJsonAdapter';
 import { FacebookMessengerJsonAdapter } from '../adapters/fb_messenger/FacebookMessengerJsonAdapter';
+import { InstagramJsonAdapter } from '../adapters/instagram/InstagramJsonAdapter';
 import { NoopAdapter } from '../adapters/noop/NoopAdapter';
 import { TelegramJsonAdapter } from '../adapters/telegram/TelegramJsonAdapter';
 import { WhatsAppTxtAdapter } from '../adapters/whatsapp/WhatsAppTxtAdapter';
@@ -139,6 +140,8 @@ async function main(): Promise<void> {
       ? new DiscordJsonAdapter()
       : platform === Platform.FB_MESSENGER
         ? new FacebookMessengerJsonAdapter()
+        : platform === Platform.INSTAGRAM
+          ? new InstagramJsonAdapter()
       : platform === Platform.TELEGRAM
         ? new TelegramJsonAdapter()
         : platform === Platform.WHATSAPP

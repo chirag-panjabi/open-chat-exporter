@@ -12,6 +12,7 @@ We now have end-to-end conversion with streaming adapters and smoke tests for:
 - WhatsApp TXT (`WHATSAPP`)
 - Telegram JSON (`TELEGRAM`)
 - Facebook Messenger JSON (`FB_MESSENGER`)
+- Instagram JSON (`INSTAGRAM`)
 
 ## Next High-Level Objectives
 - [x] Pick the exact JavaScript/TypeScript runtime (Bun).
@@ -23,6 +24,7 @@ We now have end-to-end conversion with streaming adapters and smoke tests for:
 - [x] Write the WhatsApp `.txt` adapter (streaming, multiline-safe).
 - [x] Write the Telegram `result.json` adapter (streaming, rich text flattening).
 - [x] Write the Facebook Messenger adapter (streaming JSON over `messages[]`).
+- [x] Write the Instagram adapter (streaming JSON over `messages[]`).
 - [ ] Implement the next platform adapter.
 
 ## Recent Decisions Log:

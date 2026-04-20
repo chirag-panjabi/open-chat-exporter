@@ -32,3 +32,7 @@
 ## Phase 7: Adapter (Facebook Messenger JSON)
 - [x] **Task 7.1:** Write `src/adapters/fb_messenger/FacebookMessengerJsonAdapter.ts` using streaming JSON parsing over `messages[]`.
 - [x] **Task 7.2:** Wire `--platform FB_MESSENGER` into the CLI and add a synthetic fixture + smoke test.
+
+## Phase 8: Adapter (Instagram JSON)
+- [x] **Task 8.1:** Write `src/adapters/instagram/InstagramJsonAdapter.ts` using streaming JSON parsing over `messages[]`.
+- [x] **Task 8.2:** Wire `--platform INSTAGRAM` into the CLI and add a synthetic fixture + smoke test.
