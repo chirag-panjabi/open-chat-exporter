@@ -16,7 +16,7 @@
 - [x] **Task 3.3:** Configure Bun's native streaming APIs (`Bun.file().stream()`) as the required input mechanism for adapters.
 
 ## Phase 4: Proof of Concept Adapter (Discord JSON)
-- [ ] **Task 4.1:** Write `src/adapters/discord/DiscordJsonAdapter.ts`. Implement token-by-token JSON parsing (e.g., using `stream-json`) instead of `JSON.parse()`. Needs mocking/testing.
+- [x] **Task 4.1:** Write `src/adapters/discord/DiscordJsonAdapter.ts`. Implement token-by-token JSON parsing (e.g., using `stream-json`) instead of `JSON.parse()`. Added a synthetic fixture + smoke test.
 
 ## Phase 5: Complex Adapter (WhatsApp TXT parsing)
 - [ ] **Task 5.1:** Write the raw line-by-line file reader for `src/adapters/whatsapp/WhatsAppTxtAdapter.ts`.

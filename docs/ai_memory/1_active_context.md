@@ -4,10 +4,10 @@
 ## Project Identity
 **Unified Chat Exporter (V1: TypeScript)**
 
-## Current Phase: Proof of Concept Adapter (Discord JSON)
-Phase 2 (types contract) and Phase 3 (CLI + streaming core) are complete.
+## Current Phase: Complex Adapter (WhatsApp TXT parsing)
+Phase 2 (types contract), Phase 3 (CLI + streaming core), and Phase 4 (Discord JSON POC adapter) are complete.
 
-We now have a working end-to-end pipeline for generating a unified export wrapper JSON via `--platform UNKNOWN`.
+We now have a working end-to-end pipeline for generating a unified export wrapper JSON via `--platform UNKNOWN` and a proof-of-concept adapter for `--platform DISCORD`.
 
 ## Next High-Level Objectives
 - [x] Pick the exact JavaScript/TypeScript runtime (Bun).
@@ -15,7 +15,8 @@ We now have a working end-to-end pipeline for generating a unified export wrappe
 - [x] Translate the JSON rules inside `03_unified_schema_definition.md` into strict TypeScript Interfaces inside a `src/types/` folder.
 - [x] Build the abstract streaming engines and base Adapter logic.
 - [x] Build the CLI Shell (`src/cli/index.ts`) for `convert`.
-- [ ] Write the first adapter POC (Discord JSON).
+- [x] Write the first adapter POC (Discord JSON).
+- [ ] Write the WhatsApp `.txt` adapter (streaming, multiline-safe).
 
 ## Recent Decisions Log:
 - **Language:** TypeScript V1, Rust V2.

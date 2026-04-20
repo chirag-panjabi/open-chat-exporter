@@ -1,4 +1,5 @@
 import { basename } from 'node:path';
+import { DiscordJsonAdapter } from '../adapters/discord/DiscordJsonAdapter';
 import { NoopAdapter } from '../adapters/noop/NoopAdapter';
 import type { AdapterInput } from '../core/BaseAdapter';
 import { writeUnifiedExportJson } from '../core/writeUnifiedExportJson';
@@ -130,11 +131,16 @@ async function main(): Promise<void> {
     stream: file.stream(),
   };
 
-  const adapter = platform === Platform.UNKNOWN ? new NoopAdapter() : null;
+  const adapter =
+    platform === Platform.DISCORD
+      ? new DiscordJsonAdapter()
+      : platform === Platform.UNKNOWN
+        ? new NoopAdapter()
+        : null;
   if (!adapter) {
     process.stderr.write(
       `Adapter not implemented for platform: ${platform}\n` +
-        `For now, run with --platform UNKNOWN to test streaming output.\n`
+      `For now, run with --platform UNKNOWN to test streaming output.\n`
     );
     process.exitCode = 3;
     return;

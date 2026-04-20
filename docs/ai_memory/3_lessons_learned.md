@@ -10,3 +10,4 @@
 ## Known Complexities to Watch Out For:
 - **Timestamp Parsing Chaos:** `Date.parse()` in JS is notoriously fickle across different locales. We may need to explicitly use a robust library like `dayjs` or `date-fns` when dealing with international data dumps from WhatsApp or Line.
 - **OOM Crashes:** Do not ever use `fs.readFileSync` or `await file.text()` or `JSON.parse(wholeFileString)` anywhere in the `.ts` files. It will explode on Discord or Telegram dumps. Stream it chunked. Always.
+- **TypeScript + `stream-json` imports:** With our TS config (`moduleResolution: bundler` + package `exports`), subpath imports may require the explicit `.js` suffix (e.g. `stream-json/parser.js`, not `stream-json/parser`) to resolve correctly.

@@ -1,0 +1,67 @@
+{
+    "guild": {
+        "id": "g1",
+        "name": "Example Guild"
+    },
+    "channel": {
+        "id": "c1",
+        "name": "general",
+        "type": "TextChannel"
+    },
+    "exportedAt": "2024-01-01T00:06:00.000+00:00",
+    "messages": [
+        {
+            "id": "100000000000000001",
+            "type": "Default",
+            "timestamp": "2024-01-01T00:00:00.000+00:00",
+            "content": "Hello from DiscordChatExporter fixture.",
+            "author": {
+                "id": "u1",
+                "name": "Alice",
+                "discriminator": "1234"
+            },
+            "attachments": [],
+            "reactions": [
+                {
+                    "emoji": {
+                        "name": "👍"
+                    },
+                    "count": 2
+                }
+            ]
+        },
+        {
+            "id": "100000000000000002",
+            "type": "Reply",
+            "timestamp": "2024-01-01T00:01:00.000+00:00",
+            "timestampEdited": "2024-01-01T00:01:30.000+00:00",
+            "content": "This is a reply with an attachment.",
+            "author": {
+                "id": "u2",
+                "name": "Bob",
+                "discriminator": "0000"
+            },
+            "attachments": [
+                {
+                    "fileName": "image.png",
+                    "url": "https://example.invalid/image.png"
+                }
+            ],
+            "reference": {
+                "messageId": "100000000000000001"
+            }
+        },
+        {
+            "id": "100000000000000003",
+            "type": "ChannelPinnedMessage",
+            "timestamp": "2024-01-01T00:02:00.000+00:00",
+            "content": "A message was pinned.",
+            "author": {
+                "id": "u3",
+                "name": "System",
+                "discriminator": "0000"
+            },
+            "attachments": []
+        }
+    ]
+}
