@@ -36,6 +36,27 @@ node_modules/
 .env.local
 *.pem
 
+# Chat exports / personal data (NEVER COMMIT)
+exports/
+data/
+private/
+*.sqlite
+*.db
+*.db-shm
+*.db-wal
+ChatStorage.sqlite
+Manifest.db
+msgstore.db
+msgstore.db.*
+wa.db
+wa.db.*
+*.crypt*
+*.crypt12
+*.crypt14
+*.crypt15
+key
+*.key
+
 # OS Files
 .DS_Store
 .AppleDouble

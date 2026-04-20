@@ -7,7 +7,7 @@
 - [x] **Task 1.3:** Setup the ESLint / Prettier code formatters to ensure strict typing.
 
 ## Phase 2: Type Definition (The Contract)
-- [x] **Task 2.1:** Convert `03_unified_schema_definition.md` into exact TypeScript interfaces `IUnifiedMessage`, `IUnifiedRoom`, `IReaction`, `IAttachment`.
+- [x] **Task 2.1:** Convert `03_unified_schema_definition.md` into exact TypeScript interfaces (e.g., `IUnifiedExport`, `IExportMeta`, `IChatInfo`, `IUnifiedMessage`, `ISender`, `IMessageContext`, `IReaction`, `IInteractions`, `IMessageMetadata`) and enums (`Platform`, `ChatType`).
 - [x] **Task 2.2:** Add JSDoc comments to enforce the normalization mathematical rules (e.g. `timestamp_utc` must be ISO 8601).
 
 ## Phase 3: The CLI Core & Streaming Engine

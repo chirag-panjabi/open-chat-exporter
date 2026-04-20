@@ -130,13 +130,13 @@ export interface IMessageMetadata {
  * NOTE: Normalization Rules must be strictly enforced by the Adapter.
  */
 export interface IUnifiedMessage {
-  /** 
+  /**
    * The Native ID or a Deterministic Hash (SHA-256).
    * ENFORCEMENT: If platform uses flat text, generate hash using timestamp + sender + content.
    */
   message_id: string;
 
-  /** 
+  /**
    * The timestamp the message was sent.
    * ENFORCEMENT: MUST be converted mathematically to strict ISO 8601 UTC string.
    */
@@ -145,7 +145,7 @@ export interface IUnifiedMessage {
   /** Information regarding the original sender. */
   sender: ISender;
 
-  /** 
+  /**
    * The raw text content.
    * ENFORCEMENT: Any rich text arrays MUST be flattened into standard Markdown strings.
    */

@@ -37,20 +37,25 @@ The system will use a plug-and-play adapter model. Each adapter is responsible f
 *   **LinkedIn Messaging:** Parses the `messages.csv` export from the LinkedIn data privacy archive.
 
 ### B. The Internal Unified Schema
-Regardless of where the data came from, it is mapped into this strict internal representation. This schema is designed to preserve critical conversational context (threads, rooms, and reactions) for LLMs:
-*   `message_id` (String, generated hash or native ID for deduplication)
-*   `platform` (String: WHATSAPP, IMESSAGE...)
-*   `chat_name` / `room_name` (String, e.g., "Family Group", "Engineering Channel")
-*   `chat_type` (Enum: DIRECT, GROUP, CHANNEL)
-*   `timestamp_utc` (ISO 8601 string)
-*   `sender_id` / `sender_name` (String)
-*   `receiver_id` / `receiver_name` (String, if applicable)
-*   `reply_to_message_id` (String, linking to parent message for threading)
-*   `message_content` (String, raw body text)
-*   `reactions` (Array of objects: `[{emoji: "👍", sender: "User_B"}]`)
-*   `has_attachment` (Boolean) - *Note: Actual media extraction/embedding is reserved for a future release to prevent context bloat and out-of-memory errors.*
-*   `is_edited` (Boolean)
-*   `system_message` (Boolean - true if it's "User joined the group")
+Regardless of where the data came from, it is mapped into a strict internal representation designed to preserve critical conversational context while minimizing token bloat.
+
+**Authoritative schema:** `03_unified_schema_definition.md`
+
+**Export wrapper (one per export):**
+*   `export_meta`: `{ version, exporter_version, exported_at }`
+*   `chat_info`: `{ platform, chat_name, chat_type, participant_count? }`
+*   `messages`: `IUnifiedMessage[]` (flat array)
+
+**Message object (one per message):**
+*   `message_id` (String, Discord native ID or deterministic generated hash)
+*   `timestamp_utc` (ISO 8601 UTC string)
+*   `sender`: `{ id, original_name, resolved_name? }`
+*   `content` (String, raw body text; rich text flattened to Markdown)
+*   `context`: `{ reply_to_message_id, thread_id?, forwarded_from? }`
+*   `interactions`: `{ reactions[] }` (optional)
+*   `metadata`: `{ has_attachment, is_edited, is_deleted, is_system }`
+
+This intentionally avoids repeating `platform` and `chat_name` on every message to reduce JSON size and LLM context waste.
 
 ### C. The Scrubbing & Pre-Processing Engine
 Give the user local, absolute command over the data before it's finalized.
@@ -64,7 +69,7 @@ Give the user local, absolute command over the data before it's finalized.
 The final payload can be downloaded in formats highly optimized for AI workflows, with built-in awareness of LLM context limits:
 *   **Automated Context Chunking:** Huge chat histories are automatically sliced by time (e.g., monthly files like `chat_2024_01.md`) or by token count (e.g., using `tiktoken` to slice at exactly 100k tokens) so they don't break LLM context limits when copy-pasted.
 *   **Clean Markdown (`.md`):** E.g., `**[User_A] (14:32)**: Here we go again.` Includes inline context for reactions and thread replies (perfect for pasting into ChatGPT/Claude).
-*   **Structured JSON (`.json`):** An array of objects matching the internal schema. (Perfect for the Sovereign GraphRAG backend).
+*   **Structured JSON (`.json`):** A root wrapper object (`export_meta`, `chat_info`, `messages`) matching `03_unified_schema_definition.md`. (Perfect for the Sovereign GraphRAG backend).
 *   **CSV / TSV:** For manual spreadsheet analysis.
 
 ## 2. Red Team Analysis & Risk Mitigation (Failure Modes)
@@ -108,5 +113,5 @@ We have decided to build **V1 of the Unified Chat Exporter in TypeScript** (comp
 
 By choosing TypeScript for V1, we optimize for speed-to-market and community growth. By planning for Rust in V2, we secure the project's long-term enterprise viability.
 
-## 3. How this bridges to Sovereign
+## 4. How this bridges to Sovereign
 The output of this Unified Chat Exporter (specifically the JSON format) will become the exact, required input schema for the Sovereign AP Framework App. By decoupling the messy parsing logic from the AI analysis logic, both projects become exponentially easier to build and maintain.

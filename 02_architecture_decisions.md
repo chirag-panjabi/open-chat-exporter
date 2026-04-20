@@ -34,6 +34,11 @@ Below is the chronological log of architecture and design decisions made for the
 **Decision:** **TypeScript (via Bun or Deno)** is chosen for V1 (The Minimum Viable Product). We will eventually build the high-performance core in **Rust** as a future V2 iteration.
 **Reason:** TypeScript offers massive developer velocity, an enormous open-source community for building the 15+ varied platform adapters, and flawless code sharing with a future web/Tauri UI. The tradeoff is memory consumption. Once V1 proves product-market fit, we will utilize Rust to achieve memory-safe perfection and lightning-fast processing for 5GB+ dumps. 
 
+### Decision 7: Root Wrapper Export Format (Token-Bloat Reduction)
+**Date:** April 20, 2026
+**Decision:** Adopt a root export wrapper structure (`export_meta`, `chat_info`, `messages[]`) rather than duplicating room/platform fields on every message.
+**Reason:** Repeating room-level metadata per message is pure LLM token waste. A wrapper structure keeps exports smaller, improves RAG ingestion, and makes chunking by time/token count deterministic.
+
 ### Decision 8: Cross-Platform Schema Validation & Normalization Rules
 **Date:** April 20, 2026
 **Decision:** Updated the JSON schema after aggressively cross-examining it against 15+ different platform export formats (including Apple's proprietary SQLite structures, FB Messenger JSON arrays, and flat CSVs). Added strict normalization rules that the parsers must enforce: Deterministic ID generation (SHA-256) for flat-file platforms like WhatsApp to enable deduplication; mathematical conversions for Apple Mach Absolute Time and UNIX milliseconds to ISO 8601 UTC; array-flattening for Telegram's rich text objects into standard Markdown; and explicit mapping of Apple/SMS "is_from_me" Boolean values into dynamic user names via CLI flags. Added `context.forwarded_from`, `metadata.is_deleted`, and `context.thread_id` to handle Slack sub-threads and WhatsApp deleted message events.
@@ -43,10 +48,15 @@ Below is the chronological log of architecture and design decisions made for the
 **Date:** April 20, 2026
 **Decision:** *This strategy was abandoned. See Decision 11.*
 
+### Decision 10: Heuristic Reply Reconstruction (Abandoned)
+**Date:** April 20, 2026
+**Decision:** Attempted to infer `reply_to_message_id` for WhatsApp/Line `.txt` exports by heuristically matching quoted text snippets to earlier messages.
+**Reason:** Threading is essential for LLM context, but this approach depends on reply/quote metadata being present in the exported flat text. (It is not; see Decision 11.)
+
 ### Decision 11: The "Flat-File" Context Paradox (WhatsApp Replies)
 **Date:** April 20, 2026
 **Decision:** Overturned Decisions 9 & 10. A secondary Red Team review confirmed that WhatsApp and Line `.txt` consumer exports **do not generate blockquotes or text snippets** to denote replies at all. The reply context is completely stripped by the platform and output as a normal, chronological text message. Therefore, our standard WhatsApp TXT adapter will simply set `reply_to_message_id: null` universally.
-**Reason:** Heuristic reverse-string lookups are impossible if the platform strips the quoting metadata entirely from the output text. The only way to retrieve actual context threading for WhatsApp is to build advanced parsing adapters that read their offline SQLite databases (`msgstore.db.crypt14`/`ChatStorage.sqlite`), which actually retain the `reply_to` column data. The pipeline must gracefully accept that simple `.txt` exports mean accepting data loss created by the platform.
+**Reason:** Heuristic reverse-string lookups are impossible if the platform strips the quoting metadata entirely from the output text. The only way to retrieve actual context threading for WhatsApp is to build advanced parsing adapters that read their offline encrypted SQLite databases (`msgstore.db.crypt14`/`.crypt15` on Android and `ChatStorage.sqlite` from iOS backups), which retain reply linkage. The pipeline must gracefully accept that simple `.txt` exports mean accepting data loss created by the platform.
 
 ### Decision 12: WhatsApp Database Feasibility & "WhatsApp-Chat-Exporter" Integration
 **Date:** April 20, 2026
