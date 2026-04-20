@@ -4,15 +4,16 @@
 ## Project Identity
 **Unified Chat Exporter (V1: TypeScript)**
 
-## Current Phase: Type Definition & Core Implementation
-We are now inside the **Implementation Phase**.
-The project has been natively scaffolded using `npm`, strict TypeScript configurations, ESLint, and Prettier. The directories limit the scope of logic (cli vs adapters vs core). We have established `tsx` as our agile development runtime.
+## Current Phase: Core Engine & CLI Architecture
+The **Implementation Phase (Type Definition)** is complete.
+The `src/types/index.ts` file now acts as the strict contract for all data adapters. We are successfully using `bun` as the native execution engine.
 
 ## Next High-Level Objectives
-- [x] Pick the exact JavaScript/TypeScript runtime (Node/tsx).
+- [x] Pick the exact JavaScript/TypeScript runtime (Bun).
 - [x] Initialize the project and setup the dependency structure.
-- [ ] Translate the JSON rules inside `03_unified_schema_definition.md` into strict TypeScript Interfaces inside a `src/types/` folder.
-- [ ] Build the abstract streaming engines and Adapter logic.
+- [x] Translate the JSON rules inside `03_unified_schema_definition.md` into strict TypeScript Interfaces inside a `src/types/` folder.
+- [ ] Build the abstract streaming engines and base Adapter logic.
+- [ ] Build the CLI Shell (`commander` / `yargs` / `bun:cli`).
 - [ ] Write the first adapter POC (WhatsApp TXT format or Discord JSON).
 
 ## Recent Decisions Log:

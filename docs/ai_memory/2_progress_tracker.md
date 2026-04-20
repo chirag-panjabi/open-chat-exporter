@@ -7,13 +7,13 @@
 - [x] **Task 1.3:** Setup the ESLint / Prettier code formatters to ensure strict typing.
 
 ## Phase 2: Type Definition (The Contract)
-- [ ] **Task 2.1:** Convert `03_unified_schema_definition.md` into exact TypeScript interfaces `IUnifiedMessage`, `IUnifiedRoom`, `IReaction`, `IAttachment`.
-- [ ] **Task 2.2:** Add JSDoc comments to enforce the normalization mathematical rules (e.g. `timestamp_utc` must be ISO 8601).
+- [x] **Task 2.1:** Convert `03_unified_schema_definition.md` into exact TypeScript interfaces `IUnifiedMessage`, `IUnifiedRoom`, `IReaction`, `IAttachment`.
+- [x] **Task 2.2:** Add JSDoc comments to enforce the normalization mathematical rules (e.g. `timestamp_utc` must be ISO 8601).
 
 ## Phase 3: The CLI Core & Streaming Engine
-- [ ] **Task 3.1:** Setup the `commander.js` or `yargs` CLI entry point in `src/cli/index.ts`. Example: `chat-export --input <file> --platform <whatsapp|discord|imessage>`.
+- [ ] **Task 3.1:** Setup the CLI entry point in `src/cli/index.ts` (e.g. `bun --bun index.ts --input <file> --platform <discord>`).
 - [ ] **Task 3.2:** Implement the abstract base class `BaseAdapter` inside `src/core/BaseAdapter.ts`. Every platform adapter must extend this class and implement `parseStream()` that strictly outputs `IUnifiedMessage`.
-- [ ] **Task 3.3:** Choose and install the Node/Bun file steaming library necessary to prevent OOM errors parsing 5GB exports.
+- [ ] **Task 3.3:** Configure Bun's native streaming APIs (`Bun.file().stream()`) to parse chunked blobs rather than dropping into `fs.readFileSync`.
 
 ## Phase 4: Proof of Concept Adapter (Discord JSON)
 - [ ] **Task 4.1:** Write `src/adapters/discord/DiscordJsonAdapter.ts`. Implement token-by-token JSON parsing (e.g., using `stream-json`) instead of `JSON.parse()`. Needs mocking/testing.
