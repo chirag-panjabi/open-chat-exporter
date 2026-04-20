@@ -1,6 +1,7 @@
 import { basename } from 'node:path';
 import { DiscordJsonAdapter } from '../adapters/discord/DiscordJsonAdapter';
 import { NoopAdapter } from '../adapters/noop/NoopAdapter';
+import { WhatsAppTxtAdapter } from '../adapters/whatsapp/WhatsAppTxtAdapter';
 import type { AdapterInput } from '../core/BaseAdapter';
 import { writeUnifiedExportJson } from '../core/writeUnifiedExportJson';
 import { ChatType, Platform } from '../types';
@@ -134,9 +135,11 @@ async function main(): Promise<void> {
   const adapter =
     platform === Platform.DISCORD
       ? new DiscordJsonAdapter()
-      : platform === Platform.UNKNOWN
-        ? new NoopAdapter()
-        : null;
+      : platform === Platform.WHATSAPP
+        ? new WhatsAppTxtAdapter()
+        : platform === Platform.UNKNOWN
+          ? new NoopAdapter()
+          : null;
   if (!adapter) {
     process.stderr.write(
       `Adapter not implemented for platform: ${platform}\n` +

@@ -1,0 +1,7 @@
+13/04/2026, 09:15 - Alice: Hello WhatsApp TXT fixture.
+13/04/2026, 09:16 - Bob: This is a multiline message.
+Second line of the same message.
+Third line.
+13/04/2026, 09:17 - Messages to this group are now secured with end-to-end encryption.
+13/04/2026, 09:18 - Alice: <Media omitted>
+13/04/2026, 09:19 - Bob: This message was deleted

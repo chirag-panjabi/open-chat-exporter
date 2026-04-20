@@ -19,7 +19,7 @@
 - [x] **Task 4.1:** Write `src/adapters/discord/DiscordJsonAdapter.ts`. Implement token-by-token JSON parsing (e.g., using `stream-json`) instead of `JSON.parse()`. Added a synthetic fixture + smoke test.
 
 ## Phase 5: Complex Adapter (WhatsApp TXT parsing)
-- [ ] **Task 5.1:** Write the raw line-by-line file reader for `src/adapters/whatsapp/WhatsAppTxtAdapter.ts`.
-- [ ] **Task 5.2:** Implement locale-aware, resilient timestamp regex pattern logic for WhatsApp `.txt` messages.
-- [ ] **Task 5.3:** Set `reply_to_message_id: null` universally.
-- [ ] **Task 5.4:** Write the test suite specifically for multiline messages to ensure they don't break the line-reader chunking algorithm.
+- [x] **Task 5.1:** Write the raw line-by-line file reader for `src/adapters/whatsapp/WhatsAppTxtAdapter.ts`.
+- [x] **Task 5.2:** Implement locale-aware, resilient timestamp regex pattern logic for WhatsApp `.txt` messages.
+- [x] **Task 5.3:** Set `reply_to_message_id: null` universally.
+- [x] **Task 5.4:** Write the test suite specifically for multiline messages to ensure they don't break the line-reader chunking algorithm.
