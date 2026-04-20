@@ -4,17 +4,18 @@
 ## Project Identity
 **Unified Chat Exporter (V1: TypeScript)**
 
-## Current Phase: Core Engine & CLI Architecture
-The **Implementation Phase (Type Definition)** is complete.
-The `src/types/index.ts` file now acts as the strict contract for all data adapters. We are successfully using `bun` as the native execution engine.
+## Current Phase: Proof of Concept Adapter (Discord JSON)
+Phase 2 (types contract) and Phase 3 (CLI + streaming core) are complete.
+
+We now have a working end-to-end pipeline for generating a unified export wrapper JSON via `--platform UNKNOWN`.
 
 ## Next High-Level Objectives
 - [x] Pick the exact JavaScript/TypeScript runtime (Bun).
 - [x] Initialize the project and setup the dependency structure.
 - [x] Translate the JSON rules inside `03_unified_schema_definition.md` into strict TypeScript Interfaces inside a `src/types/` folder.
-- [ ] Build the abstract streaming engines and base Adapter logic.
-- [ ] Build the CLI Shell (`commander` / `yargs` / `bun:cli`).
-- [ ] Write the first adapter POC (WhatsApp TXT format or Discord JSON).
+- [x] Build the abstract streaming engines and base Adapter logic.
+- [x] Build the CLI Shell (`src/cli/index.ts`) for `convert`.
+- [ ] Write the first adapter POC (Discord JSON).
 
 ## Recent Decisions Log:
 - **Language:** TypeScript V1, Rust V2.

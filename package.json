@@ -7,6 +7,10 @@
     "doc": "docs"
   },
   "scripts": {
+    "typecheck": "bunx tsc -p tsconfig.json --noEmit",
+    "lint": "bunx eslint .",
+    "format": "bunx prettier --write .",
+    "cli": "bun run src/cli/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
