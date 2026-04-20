@@ -28,3 +28,7 @@
 - [x] **Task 6.1:** Write `src/adapters/telegram/TelegramJsonAdapter.ts` with streaming JSON parsing (no `JSON.parse()` on full file).
 - [x] **Task 6.2:** Flatten Telegram rich text arrays into Markdown strings for `content`.
 - [x] **Task 6.3:** Wire `--platform TELEGRAM` into the CLI and add a synthetic fixture + smoke test.
+
+## Phase 7: Adapter (Facebook Messenger JSON)
+- [x] **Task 7.1:** Write `src/adapters/fb_messenger/FacebookMessengerJsonAdapter.ts` using streaming JSON parsing over `messages[]`.
+- [x] **Task 7.2:** Wire `--platform FB_MESSENGER` into the CLI and add a synthetic fixture + smoke test.

@@ -1,0 +1,38 @@
+{
+  "participants": [
+    { "name": "Alice" },
+    { "name": "Bob" }
+  ],
+  "messages": [
+    {
+      "sender_name": "Alice",
+      "timestamp_ms": 1776052500000,
+      "content": "Hello from Messenger fixture.",
+      "type": "Generic",
+      "reactions": [
+          { "reaction": "👍", "actor": "Bob" },
+          { "reaction": "👍", "actor": "Alice" }
+      ]
+    },
+    {
+      "sender_name": "Bob",
+      "timestamp_ms": 1776052560000,
+      "content": "Here is a photo.",
+      "type": "Generic",
+      "photos": [{ "uri": "photos/1.jpg" }]
+    },
+    {
+      "sender_name": "Alice",
+      "timestamp_ms": 1776052620000,
+      "content": "This message was removed",
+      "type": "Generic",
+      "is_unsent": true
+    },
+    {
+      "sender_name": "System",
+      "timestamp_ms": 1776052680000,
+      "content": "Alice named the group Chat",
+      "type": "Subscribe"
+    }
+  ]
+}

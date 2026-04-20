@@ -4,10 +4,14 @@
 ## Project Identity
 **Unified Chat Exporter (V1: TypeScript)**
 
-## Current Phase: Complex Adapter (WhatsApp TXT parsing)
-Phase 2 (types contract), Phase 3 (CLI + streaming core), and Phase 4 (Discord JSON POC adapter) are complete.
+## Current Phase: Adapters (Streaming-first)
+Phase 1 (scaffolding), Phase 2 (types contract), and Phase 3 (CLI + streaming core) are complete.
 
-We now have a working end-to-end pipeline for generating a unified export wrapper JSON via `--platform UNKNOWN` and a proof-of-concept adapter for `--platform DISCORD`.
+We now have end-to-end conversion with streaming adapters and smoke tests for:
+- Discord JSON (`DISCORD`)
+- WhatsApp TXT (`WHATSAPP`)
+- Telegram JSON (`TELEGRAM`)
+- Facebook Messenger JSON (`FB_MESSENGER`)
 
 ## Next High-Level Objectives
 - [x] Pick the exact JavaScript/TypeScript runtime (Bun).
@@ -16,7 +20,10 @@ We now have a working end-to-end pipeline for generating a unified export wrappe
 - [x] Build the abstract streaming engines and base Adapter logic.
 - [x] Build the CLI Shell (`src/cli/index.ts`) for `convert`.
 - [x] Write the first adapter POC (Discord JSON).
-- [ ] Write the WhatsApp `.txt` adapter (streaming, multiline-safe).
+- [x] Write the WhatsApp `.txt` adapter (streaming, multiline-safe).
+- [x] Write the Telegram `result.json` adapter (streaming, rich text flattening).
+- [x] Write the Facebook Messenger adapter (streaming JSON over `messages[]`).
+- [ ] Implement the next platform adapter.
 
 ## Recent Decisions Log:
 - **Language:** TypeScript V1, Rust V2.

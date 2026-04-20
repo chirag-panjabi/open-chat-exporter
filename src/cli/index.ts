@@ -1,5 +1,6 @@
 import { basename } from 'node:path';
 import { DiscordJsonAdapter } from '../adapters/discord/DiscordJsonAdapter';
+import { FacebookMessengerJsonAdapter } from '../adapters/fb_messenger/FacebookMessengerJsonAdapter';
 import { NoopAdapter } from '../adapters/noop/NoopAdapter';
 import { TelegramJsonAdapter } from '../adapters/telegram/TelegramJsonAdapter';
 import { WhatsAppTxtAdapter } from '../adapters/whatsapp/WhatsAppTxtAdapter';
@@ -136,13 +137,15 @@ async function main(): Promise<void> {
   const adapter =
     platform === Platform.DISCORD
       ? new DiscordJsonAdapter()
+      : platform === Platform.FB_MESSENGER
+        ? new FacebookMessengerJsonAdapter()
       : platform === Platform.TELEGRAM
         ? new TelegramJsonAdapter()
-      : platform === Platform.WHATSAPP
-        ? new WhatsAppTxtAdapter()
-        : platform === Platform.UNKNOWN
-          ? new NoopAdapter()
-          : null;
+        : platform === Platform.WHATSAPP
+          ? new WhatsAppTxtAdapter()
+          : platform === Platform.UNKNOWN
+            ? new NoopAdapter()
+            : null;
   if (!adapter) {
     process.stderr.write(
       `Adapter not implemented for platform: ${platform}\n` +
