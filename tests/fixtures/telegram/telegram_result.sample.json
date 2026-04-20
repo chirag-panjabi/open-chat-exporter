@@ -1,0 +1,39 @@
+{
+  "name": "Telegram Fixture Chat",
+  "type": "personal_chat",
+  "id": 123456,
+  "messages": [
+    {
+      "id": 1,
+      "type": "message",
+      "date": "2026-04-13T09:15:00",
+      "from": "Alice",
+      "from_id": "user123",
+      "text": "Hello from Telegram fixture."
+    },
+    {
+      "id": 2,
+      "type": "message",
+      "date_unixtime": "1776077760",
+      "from": "Bob",
+      "from_id": "user456",
+      "reply_to_message_id": 1,
+      "edited": "2026-04-13T09:16:30",
+      "text": [
+        "This has ",
+        { "type": "bold", "text": "bold" },
+        " and a ",
+        { "type": "link", "text": "link", "href": "https://example.invalid" },
+        "."
+      ],
+      "photo": "photo.jpg"
+    },
+    {
+      "id": 3,
+      "type": "service",
+      "date": "2026-04-13T09:17:00",
+      "action": "group_call",
+      "text": "Alice started a group call."
+    }
+  ]
+}

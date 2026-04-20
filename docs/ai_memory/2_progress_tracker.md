@@ -23,3 +23,8 @@
 - [x] **Task 5.2:** Implement locale-aware, resilient timestamp regex pattern logic for WhatsApp `.txt` messages.
 - [x] **Task 5.3:** Set `reply_to_message_id: null` universally.
 - [x] **Task 5.4:** Write the test suite specifically for multiline messages to ensure they don't break the line-reader chunking algorithm.
+
+## Phase 6: Proof of Concept Adapter (Telegram JSON)
+- [x] **Task 6.1:** Write `src/adapters/telegram/TelegramJsonAdapter.ts` with streaming JSON parsing (no `JSON.parse()` on full file).
+- [x] **Task 6.2:** Flatten Telegram rich text arrays into Markdown strings for `content`.
+- [x] **Task 6.3:** Wire `--platform TELEGRAM` into the CLI and add a synthetic fixture + smoke test.

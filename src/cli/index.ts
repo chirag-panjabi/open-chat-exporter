@@ -1,6 +1,7 @@
 import { basename } from 'node:path';
 import { DiscordJsonAdapter } from '../adapters/discord/DiscordJsonAdapter';
 import { NoopAdapter } from '../adapters/noop/NoopAdapter';
+import { TelegramJsonAdapter } from '../adapters/telegram/TelegramJsonAdapter';
 import { WhatsAppTxtAdapter } from '../adapters/whatsapp/WhatsAppTxtAdapter';
 import type { AdapterInput } from '../core/BaseAdapter';
 import { writeUnifiedExportJson } from '../core/writeUnifiedExportJson';
@@ -135,6 +136,8 @@ async function main(): Promise<void> {
   const adapter =
     platform === Platform.DISCORD
       ? new DiscordJsonAdapter()
+      : platform === Platform.TELEGRAM
+        ? new TelegramJsonAdapter()
       : platform === Platform.WHATSAPP
         ? new WhatsAppTxtAdapter()
         : platform === Platform.UNKNOWN
