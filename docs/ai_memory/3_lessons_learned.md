@@ -11,6 +11,7 @@
 
 ## Known Complexities to Watch Out For:
 - **Timestamp Parsing Chaos:** `Date.parse()` in JS is notoriously fickle across different locales. We may need to explicitly use a robust library like `dayjs` or `date-fns` when dealing with international data dumps from WhatsApp or Line.
+- **iMessage Timestamp Units:** macOS Messages `chat.db` stores timestamps relative to Apple epoch (2001-01-01), but the unit can vary (seconds/ms/us/ns) across OS versions and schemas. Use a magnitude-based heuristic and always normalize to ISO 8601 UTC.
 - **OOM Crashes:** Do not ever use `fs.readFileSync` or `await file.text()` or `JSON.parse(wholeFileString)` anywhere in the `.ts` files. It will explode on Discord or Telegram dumps. Stream it chunked. Always.
 - **TypeScript + `stream-json` imports:** With our TS config (`moduleResolution: bundler` + package `exports`), subpath imports may require the explicit `.js` suffix (e.g. `stream-json/parser.js`, not `stream-json/parser`) to resolve correctly.
 - **Export Accessibility:** Some platforms' "full" exports are admin/compliance gated (e.g., Slack workspace exports, Teams compliance exports). Prefer adapters that accept the smallest user-accessible artifact (single exported file) before adding folder/workspace-level support.

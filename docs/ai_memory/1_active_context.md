@@ -12,6 +12,7 @@ We now have end-to-end conversion with streaming adapters and smoke tests for:
 - WhatsApp TXT (`WHATSAPP`)
 - Telegram JSON (`TELEGRAM`)
 - Slack JSON (`SLACK`)
+- iMessage macOS Messages `chat.db` (`IMESSAGE`)
 - Facebook Messenger JSON (`FB_MESSENGER`)
 - Google Chat JSON (`GOOG_CHAT`)
 - Instagram JSON (`INSTAGRAM`)
@@ -36,7 +37,7 @@ We now have end-to-end conversion with streaming adapters and smoke tests for:
 - [x] Write the Snapchat adapter (streaming JSON `chat_history.json`).
 - [x] Write the LinkedIn adapter (streaming CSV `messages.csv`).
 - [x] Write the Slack adapter (streaming JSON over Slack channel message arrays).
-- [ ] Implement the next platform adapter (next up: iMessage).
+- [x] Implement the next platform adapter (next up: iMessage).
 
 ## Recent Decisions Log:
 - **Language:** TypeScript V1, Rust V2.

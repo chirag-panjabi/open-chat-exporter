@@ -12,6 +12,7 @@ import { SlackJsonAdapter } from '../adapters/slack/SlackJsonAdapter';
 import { TelegramJsonAdapter } from '../adapters/telegram/TelegramJsonAdapter';
 import { WhatsAppTxtAdapter } from '../adapters/whatsapp/WhatsAppTxtAdapter';
 import { XTwitterDirectMessagesJsAdapter } from '../adapters/x_twitter/XTwitterDirectMessagesJsAdapter';
+import { IMessageChatDbAdapter } from '../adapters/imessage/IMessageChatDbAdapter';
 import type { AdapterInput } from '../core/BaseAdapter';
 import { writeUnifiedExportJson } from '../core/writeUnifiedExportJson';
 import { ChatType, Platform } from '../types';
@@ -24,6 +25,8 @@ type Args = {
   chatName?: string;
   chatType?: string;
   participantCount?: string;
+  chatGuid?: string;
+  myName?: string;
 };
 
 function parseArgs(argv: string[]): Args {
@@ -59,6 +62,12 @@ function parseArgs(argv: string[]): Args {
       case '--participant-count':
         args.participantCount = value;
         break;
+      case '--chat-guid':
+        args.chatGuid = value;
+        break;
+      case '--my-name':
+        args.myName = value;
+        break;
       default:
         break;
     }
@@ -88,11 +97,13 @@ function usage(): string {
     '',
     'Options:',
     '  --input <path>             Path to an export file (or folder for future adapters)',
-    '  --platform <PLATFORM>      e.g. WHATSAPP, DISCORD, TELEGRAM, SLACK',
+    '  --platform <PLATFORM>      e.g. WHATSAPP, DISCORD, TELEGRAM, SLACK, IMESSAGE',
     '  --output <path>            Write unified JSON to a file (default: stdout)',
     '  --chat-name <name>         Overrides chat_info.chat_name (default: derived from input filename)',
     '  --chat-type <type>         DIRECT|GROUP|CHANNEL (default: GROUP)',
     '  --participant-count <n>    Optional participant count',
+    '  --chat-guid <guid>         (IMESSAGE) chat.guid to export (required)',
+    '  --my-name <name>           (IMESSAGE) display name for your outgoing messages (default: Me)',
     '',
     'Note: Not all adapters are implemented yet. Use --platform UNKNOWN to test the pipeline.',
   ].join('\n');
@@ -127,6 +138,12 @@ async function main(): Promise<void> {
 
   const platform = normalizePlatform(args.platform);
   const chatType = normalizeChatType(args.chatType);
+
+  if (platform === Platform.IMESSAGE && !args.chatGuid) {
+    process.stderr.write(`Missing required flag for IMESSAGE: --chat-guid\n\n${usage()}\n`);
+    process.exitCode = 2;
+    return;
+  }
 
   const file = Bun.file(args.input);
   const exists = await file.exists();
@@ -165,6 +182,8 @@ async function main(): Promise<void> {
                         ? new TelegramJsonAdapter()
                         : platform === Platform.SLACK
                           ? new SlackJsonAdapter()
+                          : platform === Platform.IMESSAGE
+                            ? new IMessageChatDbAdapter({ chatGuid: args.chatGuid!, myName: args.myName })
                           : platform === Platform.WHATSAPP
                             ? new WhatsAppTxtAdapter()
                             : platform === Platform.UNKNOWN
@@ -179,7 +198,8 @@ async function main(): Promise<void> {
     return;
   }
 
-  const chatName = args.chatName ?? basename(args.input);
+  const chatName =
+    args.chatName ?? (platform === Platform.IMESSAGE ? (args.chatGuid ?? basename(args.input)) : basename(args.input));
   const participantCount = args.participantCount ? Number(args.participantCount) : undefined;
 
   if (args.participantCount && (Number.isNaN(participantCount) || participantCount! < 0)) {

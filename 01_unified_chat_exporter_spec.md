@@ -19,9 +19,9 @@ The system will use a plug-and-play adapter model. Each adapter is responsible f
 *   **Telegram:** Parses the Telegram desktop `result.json` export.
 *   **Discord:** Parses offline JSON exports (e.g., DiscordChatExporter-style JSON or platform exports).
 *   **Slack:** Parses Slack export JSON files that contain message arrays (typically per-channel/per-day files). Note: full workspace exports are often **admin/owner-gated**, so the CLI targets single message JSON files rather than requiring whole-workspace access.
+*   **iMessage:** Imports a local `chat.db` SQLite file from macOS Messages (user-accessible on macOS). Requires selecting a chat via `chat.guid` (CLI: `--chat-guid`); iOS backups and device-forensics flows remain out-of-scope for the baseline adapter.
 
 **Mobile / Ecosystem Adapters (Future):**
-*   **iMessage (V1 target):** Imports a local `chat.db` SQLite file from macOS Messages (most accessible path for users with a Mac). iOS backups and device-forensics flows remain out-of-scope for the baseline adapter.
 *   **Signal:** Parses the decrypted backup format (requires user to provide passphrase).
 *   **WeChat:** Parses the exported chat history databases.
 *   **Line:** Parses the native `.txt` chat backup files.

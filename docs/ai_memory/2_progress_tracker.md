@@ -66,7 +66,7 @@
 - [x] **Task 15.2:** Wire `--platform SLACK` into the CLI and add a synthetic fixture + smoke test.
 
 ## Phase 16: Adapter (iMessage - macOS `chat.db`)
-- [ ] **Task 16.1:** Identify the minimal SQLite tables/fields required to stream iMessage messages from macOS `chat.db`.
-- [ ] **Task 16.2:** Implement a streaming-safe iMessage adapter (no full-table loads) that maps into the unified schema.
-- [ ] **Task 16.3:** Add synthetic fixtures + smoke test for iMessage.
-- [ ] **Task 16.4:** Wire `--platform IMESSAGE` into the CLI.
+- [x] **Task 16.1:** Identify the minimal SQLite tables/fields required to stream iMessage messages from macOS `chat.db`.
+- [x] **Task 16.2:** Implement a streaming-safe iMessage adapter (no full-table loads) that maps into the unified schema.
+- [x] **Task 16.3:** Add synthetic fixtures + smoke test for iMessage.
+- [x] **Task 16.4:** Wire `--platform IMESSAGE` into the CLI.
