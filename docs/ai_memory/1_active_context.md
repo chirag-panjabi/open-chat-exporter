@@ -18,6 +18,7 @@ We now have end-to-end conversion with streaming adapters and smoke tests for:
 - LinkedIn Messages CSV (`LINKEDIN`)
 - Microsoft Teams JSON (`MS_TEAMS`)
 - X (Twitter) DMs (`X_TWITTER`)
+- Skype messages JSON (`SKYPE`)
 
 ## Next High-Level Objectives
 - [x] Pick the exact JavaScript/TypeScript runtime (Bun).

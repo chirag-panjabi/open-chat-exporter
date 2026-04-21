@@ -56,3 +56,7 @@
 ## Phase 13: Adapter (X / Twitter DMs)
 - [x] **Task 13.1:** Write `src/adapters/x_twitter/XTwitterDirectMessagesJsAdapter.ts` using streaming parsing for `direct-messages.js` (JS-wrapped JSON).
 - [x] **Task 13.2:** Wire `--platform X_TWITTER` into the CLI and add a synthetic fixture + smoke test.
+
+## Phase 14: Adapter (Skype)
+- [x] **Task 14.1:** Write `src/adapters/skype/SkypeMessagesJsonAdapter.ts` using streaming JSON parsing for `messages.json`.
+- [x] **Task 14.2:** Wire `--platform SKYPE` into the CLI and add a synthetic fixture + smoke test.

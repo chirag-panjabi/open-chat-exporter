@@ -6,6 +6,7 @@ import { InstagramJsonAdapter } from '../adapters/instagram/InstagramJsonAdapter
 import { LinkedInMessagesCsvAdapter } from '../adapters/linkedin/LinkedInMessagesCsvAdapter';
 import { MicrosoftTeamsJsonAdapter } from '../adapters/ms_teams/MicrosoftTeamsJsonAdapter';
 import { NoopAdapter } from '../adapters/noop/NoopAdapter';
+import { SkypeMessagesJsonAdapter } from '../adapters/skype/SkypeMessagesJsonAdapter';
 import { SnapchatJsonAdapter } from '../adapters/snapchat/SnapchatJsonAdapter';
 import { TelegramJsonAdapter } from '../adapters/telegram/TelegramJsonAdapter';
 import { WhatsAppTxtAdapter } from '../adapters/whatsapp/WhatsAppTxtAdapter';
@@ -151,6 +152,8 @@ async function main(): Promise<void> {
             ? new MicrosoftTeamsJsonAdapter()
             : platform === Platform.X_TWITTER
               ? new XTwitterDirectMessagesJsAdapter()
+              : platform === Platform.SKYPE
+                ? new SkypeMessagesJsonAdapter()
         : platform === Platform.INSTAGRAM
           ? new InstagramJsonAdapter()
           : platform === Platform.SNAPCHAT
