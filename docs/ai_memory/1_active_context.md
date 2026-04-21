@@ -16,6 +16,7 @@ We now have end-to-end conversion with streaming adapters and smoke tests for:
 - Instagram JSON (`INSTAGRAM`)
 - Snapchat JSON (`SNAPCHAT`)
 - LinkedIn Messages CSV (`LINKEDIN`)
+- Microsoft Teams JSON (`MS_TEAMS`)
 
 ## Next High-Level Objectives
 - [x] Pick the exact JavaScript/TypeScript runtime (Bun).
@@ -31,7 +32,7 @@ We now have end-to-end conversion with streaming adapters and smoke tests for:
 - [x] Write the Instagram adapter (streaming JSON over `messages[]`).
 - [x] Write the Snapchat adapter (streaming JSON `chat_history.json`).
 - [x] Write the LinkedIn adapter (streaming CSV `messages.csv`).
-- [ ] Implement the next platform adapter.
+- [ ] Implement the next platform adapter (next up: X/Twitter DMs, then Skype).
 
 ## Recent Decisions Log:
 - **Language:** TypeScript V1, Rust V2.

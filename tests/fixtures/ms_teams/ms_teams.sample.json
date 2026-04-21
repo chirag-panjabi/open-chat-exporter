@@ -1,0 +1,23 @@
+{
+  "messages": [
+    {
+      "from": { "user": { "displayName": "Alice" } },
+      "createdDateTime": "2026-04-19T10:00:00Z",
+      "body": "Hello from Teams fixture.",
+      "messageType": "message"
+    },
+    {
+      "from": { "user": { "displayName": "Bob" } },
+      "createdDateTime": "2026-04-19T10:01:00Z",
+      "body": "File attached.",
+      "attachments": [{ "name": "file.txt" }],
+      "messageType": "message"
+    },
+    {
+      "from": { "user": { "displayName": "System" } },
+      "createdDateTime": "2026-04-19T10:02:00Z",
+      "body": "Alice added Bob",
+      "messageType": "systemEventMessage"
+    }
+  ]
+}

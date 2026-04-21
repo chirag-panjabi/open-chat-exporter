@@ -48,3 +48,7 @@
 ## Phase 11: Adapter (Google Chat JSON)
 - [x] **Task 11.1:** Write `src/adapters/goog_chat/GoogleChatJsonAdapter.ts` using streaming JSON parsing over `messages[]`.
 - [x] **Task 11.2:** Wire `--platform GOOG_CHAT` into the CLI and add a synthetic fixture + smoke test.
+
+## Phase 12: Adapter (Microsoft Teams JSON)
+- [x] **Task 12.1:** Write `src/adapters/ms_teams/MicrosoftTeamsJsonAdapter.ts` using streaming JSON parsing over `messages[]`.
+- [x] **Task 12.2:** Wire `--platform MS_TEAMS` into the CLI and add a synthetic fixture + smoke test.

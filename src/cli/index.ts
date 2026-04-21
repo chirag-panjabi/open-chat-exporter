@@ -4,6 +4,7 @@ import { FacebookMessengerJsonAdapter } from '../adapters/fb_messenger/FacebookM
 import { GoogleChatJsonAdapter } from '../adapters/goog_chat/GoogleChatJsonAdapter';
 import { InstagramJsonAdapter } from '../adapters/instagram/InstagramJsonAdapter';
 import { LinkedInMessagesCsvAdapter } from '../adapters/linkedin/LinkedInMessagesCsvAdapter';
+import { MicrosoftTeamsJsonAdapter } from '../adapters/ms_teams/MicrosoftTeamsJsonAdapter';
 import { NoopAdapter } from '../adapters/noop/NoopAdapter';
 import { SnapchatJsonAdapter } from '../adapters/snapchat/SnapchatJsonAdapter';
 import { TelegramJsonAdapter } from '../adapters/telegram/TelegramJsonAdapter';
@@ -145,6 +146,8 @@ async function main(): Promise<void> {
         ? new FacebookMessengerJsonAdapter()
         : platform === Platform.GOOG_CHAT
           ? new GoogleChatJsonAdapter()
+          : platform === Platform.MS_TEAMS
+            ? new MicrosoftTeamsJsonAdapter()
         : platform === Platform.INSTAGRAM
           ? new InstagramJsonAdapter()
           : platform === Platform.SNAPCHAT
