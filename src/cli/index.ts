@@ -9,6 +9,7 @@ import { NoopAdapter } from '../adapters/noop/NoopAdapter';
 import { SnapchatJsonAdapter } from '../adapters/snapchat/SnapchatJsonAdapter';
 import { TelegramJsonAdapter } from '../adapters/telegram/TelegramJsonAdapter';
 import { WhatsAppTxtAdapter } from '../adapters/whatsapp/WhatsAppTxtAdapter';
+import { XTwitterDirectMessagesJsAdapter } from '../adapters/x_twitter/XTwitterDirectMessagesJsAdapter';
 import type { AdapterInput } from '../core/BaseAdapter';
 import { writeUnifiedExportJson } from '../core/writeUnifiedExportJson';
 import { ChatType, Platform } from '../types';
@@ -148,6 +149,8 @@ async function main(): Promise<void> {
           ? new GoogleChatJsonAdapter()
           : platform === Platform.MS_TEAMS
             ? new MicrosoftTeamsJsonAdapter()
+            : platform === Platform.X_TWITTER
+              ? new XTwitterDirectMessagesJsAdapter()
         : platform === Platform.INSTAGRAM
           ? new InstagramJsonAdapter()
           : platform === Platform.SNAPCHAT

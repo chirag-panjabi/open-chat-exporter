@@ -11,7 +11,7 @@
     "lint": "bunx eslint .",
     "format": "bunx prettier --write .",
     "cli": "bun run src/cli/index.ts",
-    "test": "bun run tests/smoke_discord.ts && bun run tests/smoke_whatsapp.ts && bun run tests/smoke_telegram.ts && bun run tests/smoke_fb_messenger.ts && bun run tests/smoke_instagram.ts && bun run tests/smoke_snapchat.ts && bun run tests/smoke_linkedin.ts && bun run tests/smoke_goog_chat.ts && bun run tests/smoke_ms_teams.ts"
+    "test": "bun run tests/smoke_discord.ts && bun run tests/smoke_whatsapp.ts && bun run tests/smoke_telegram.ts && bun run tests/smoke_fb_messenger.ts && bun run tests/smoke_instagram.ts && bun run tests/smoke_snapchat.ts && bun run tests/smoke_linkedin.ts && bun run tests/smoke_goog_chat.ts && bun run tests/smoke_ms_teams.ts && bun run tests/smoke_x_twitter.ts"
   },
   "keywords": [],
   "author": "",

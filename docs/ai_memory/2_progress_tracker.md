@@ -52,3 +52,7 @@
 ## Phase 12: Adapter (Microsoft Teams JSON)
 - [x] **Task 12.1:** Write `src/adapters/ms_teams/MicrosoftTeamsJsonAdapter.ts` using streaming JSON parsing over `messages[]`.
 - [x] **Task 12.2:** Wire `--platform MS_TEAMS` into the CLI and add a synthetic fixture + smoke test.
+
+## Phase 13: Adapter (X / Twitter DMs)
+- [x] **Task 13.1:** Write `src/adapters/x_twitter/XTwitterDirectMessagesJsAdapter.ts` using streaming parsing for `direct-messages.js` (JS-wrapped JSON).
+- [x] **Task 13.2:** Wire `--platform X_TWITTER` into the CLI and add a synthetic fixture + smoke test.
