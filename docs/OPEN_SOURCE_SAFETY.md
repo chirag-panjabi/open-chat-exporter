@@ -4,6 +4,7 @@ This project processes **highly sensitive** personal data (chat logs, backups, c
 
 ## Never commit
 - Chat exports and datasets (WhatsApp/Telegram/Discord dumps)
+- macOS Messages databases (e.g., `~/Library/Messages/chat.db`) and attachments (`~/Library/Messages/Attachments/`)
 - iOS backups / extracted files (e.g., `ChatStorage.sqlite`, `Manifest.db`)
 - Android WhatsApp databases and keys (e.g., `msgstore.db.crypt*`, `wa.db`, `key`)
 - Any `.env` files, certificates, or API keys

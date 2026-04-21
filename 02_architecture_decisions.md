@@ -62,3 +62,8 @@ Below is the chronological log of architecture and design decisions made for the
 **Date:** April 20, 2026
 **Decision:** We will support parsing Android `.crypt15` and iOS `ChatStorage.sqlite` databases to recover lost context threading, but we will **not** instruct our tool to extract the encryption keys directly from the phone. Users must extract their own keys using established methods. We will use the schema and logic from the Python tool `KnugiHK/WhatsApp-Chat-Exporter` as a reference, but we will adapt the SQLite querying logic into our TypeScript core rather than distributing the Python tool directly.
 **Reason:** 1) Getting the decryption key on Android requires rooting the phone or using sketchy ADB backup downgrades. Apple requires unencrypted local iTunes backups. It is too fragile to automate this cleanly in a universal CLI. 2) Because `WhatsApp-Chat-Exporter` is written in Python, including it directly breaks our "Standalone Executable" zero-dependency requirement for the CLI. Thus, we port just the parsing SQL logic to our TS codebase. 
+
+### Decision 13: iMessage Input Strategy (macOS `chat.db` First)
+**Date:** April 21, 2026
+**Decision:** Implement iMessage support by parsing the macOS Messages SQLite database (`chat.db`) as the baseline adapter input.
+**Reason:** This is the most user-accessible path (no device rooting/jailbreaking, no key extraction). iOS backup/database extraction workflows are fragile and highly variable; they can be supported later as optional advanced inputs, but are not required for V1.

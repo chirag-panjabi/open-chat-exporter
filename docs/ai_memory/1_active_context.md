@@ -11,6 +11,7 @@ We now have end-to-end conversion with streaming adapters and smoke tests for:
 - Discord JSON (`DISCORD`)
 - WhatsApp TXT (`WHATSAPP`)
 - Telegram JSON (`TELEGRAM`)
+- Slack JSON (`SLACK`)
 - Facebook Messenger JSON (`FB_MESSENGER`)
 - Google Chat JSON (`GOOG_CHAT`)
 - Instagram JSON (`INSTAGRAM`)
@@ -34,8 +35,10 @@ We now have end-to-end conversion with streaming adapters and smoke tests for:
 - [x] Write the Instagram adapter (streaming JSON over `messages[]`).
 - [x] Write the Snapchat adapter (streaming JSON `chat_history.json`).
 - [x] Write the LinkedIn adapter (streaming CSV `messages.csv`).
-- [ ] Implement the next platform adapter (next up: X/Twitter DMs, then Skype).
+- [x] Write the Slack adapter (streaming JSON over Slack channel message arrays).
+- [ ] Implement the next platform adapter (next up: iMessage).
 
 ## Recent Decisions Log:
 - **Language:** TypeScript V1, Rust V2.
 - **WhatsApp Strategy:** Tier 1 format (`.txt`) strips threaded replies. Placed `reply_to_message_id: null`. Tier 2 format (`.crypt15` SQL) handles real threads but requires user key extraction. Porting Python SQLite extraction logic from `KnugiHK/WhatsApp-Chat-Exporter` into TS rather than using native Python bindings.
+- **iMessage Strategy (V1):** Target macOS Messages `chat.db` SQLite as the baseline input (most user-accessible), leaving iOS backup/device workflows for later.

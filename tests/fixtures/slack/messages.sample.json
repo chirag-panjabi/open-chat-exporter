@@ -1,0 +1,48 @@
+[
+    {
+        "type": "message",
+        "user": "U_ALICE",
+        "text": "Hello from Slack fixture.",
+        "ts": "1710000000.000100",
+        "reactions": [
+            {
+                "name": "thumbsup",
+                "users": [
+                    "U_BOB",
+                    "U_CAROL"
+                ],
+                "count": 2
+            }
+        ]
+    },
+    {
+        "type": "message",
+        "user": "U_BOB",
+        "text": "Reply in thread.",
+        "ts": "1710000001.000200",
+        "thread_ts": "1710000000.000100"
+    },
+    {
+        "type": "message",
+        "user": "U_ALICE",
+        "text": "Uploading a file.",
+        "ts": "1710000002.000300",
+        "files": [
+            {
+                "id": "F123",
+                "name": "doc.txt"
+            }
+        ],
+        "edited": {
+            "user": "U_ALICE",
+            "ts": "1710000002.000350"
+        }
+    },
+    {
+        "type": "message",
+        "subtype": "channel_join",
+        "user": "U_CAROL",
+        "text": "<@U_CAROL> joined the channel",
+        "ts": "1710000003.000400"
+    }
+]

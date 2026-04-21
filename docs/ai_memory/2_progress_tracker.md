@@ -60,3 +60,13 @@
 ## Phase 14: Adapter (Skype)
 - [x] **Task 14.1:** Write `src/adapters/skype/SkypeMessagesJsonAdapter.ts` using streaming JSON parsing for `messages.json`.
 - [x] **Task 14.2:** Wire `--platform SKYPE` into the CLI and add a synthetic fixture + smoke test.
+
+## Phase 15: Adapter (Slack)
+- [x] **Task 15.1:** Write `src/adapters/slack/SlackJsonAdapter.ts` using streaming JSON parsing over Slack message arrays.
+- [x] **Task 15.2:** Wire `--platform SLACK` into the CLI and add a synthetic fixture + smoke test.
+
+## Phase 16: Adapter (iMessage - macOS `chat.db`)
+- [ ] **Task 16.1:** Identify the minimal SQLite tables/fields required to stream iMessage messages from macOS `chat.db`.
+- [ ] **Task 16.2:** Implement a streaming-safe iMessage adapter (no full-table loads) that maps into the unified schema.
+- [ ] **Task 16.3:** Add synthetic fixtures + smoke test for iMessage.
+- [ ] **Task 16.4:** Wire `--platform IMESSAGE` into the CLI.

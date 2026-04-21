@@ -8,6 +8,7 @@ import { MicrosoftTeamsJsonAdapter } from '../adapters/ms_teams/MicrosoftTeamsJs
 import { NoopAdapter } from '../adapters/noop/NoopAdapter';
 import { SkypeMessagesJsonAdapter } from '../adapters/skype/SkypeMessagesJsonAdapter';
 import { SnapchatJsonAdapter } from '../adapters/snapchat/SnapchatJsonAdapter';
+import { SlackJsonAdapter } from '../adapters/slack/SlackJsonAdapter';
 import { TelegramJsonAdapter } from '../adapters/telegram/TelegramJsonAdapter';
 import { WhatsAppTxtAdapter } from '../adapters/whatsapp/WhatsAppTxtAdapter';
 import { XTwitterDirectMessagesJsAdapter } from '../adapters/x_twitter/XTwitterDirectMessagesJsAdapter';
@@ -87,13 +88,13 @@ function usage(): string {
     '',
     'Options:',
     '  --input <path>             Path to an export file (or folder for future adapters)',
-    '  --platform <PLATFORM>      e.g. WHATSAPP, DISCORD, TELEGRAM',
+    '  --platform <PLATFORM>      e.g. WHATSAPP, DISCORD, TELEGRAM, SLACK',
     '  --output <path>            Write unified JSON to a file (default: stdout)',
     '  --chat-name <name>         Overrides chat_info.chat_name (default: derived from input filename)',
     '  --chat-type <type>         DIRECT|GROUP|CHANNEL (default: GROUP)',
     '  --participant-count <n>    Optional participant count',
     '',
-    'Note: Adapters are not implemented yet. Use --platform UNKNOWN to test the pipeline.',
+    'Note: Not all adapters are implemented yet. Use --platform UNKNOWN to test the pipeline.',
   ].join('\n');
 }
 
@@ -154,19 +155,21 @@ async function main(): Promise<void> {
               ? new XTwitterDirectMessagesJsAdapter()
               : platform === Platform.SKYPE
                 ? new SkypeMessagesJsonAdapter()
-        : platform === Platform.INSTAGRAM
-          ? new InstagramJsonAdapter()
-          : platform === Platform.SNAPCHAT
-            ? new SnapchatJsonAdapter()
-            : platform === Platform.LINKEDIN
-              ? new LinkedInMessagesCsvAdapter()
-      : platform === Platform.TELEGRAM
-        ? new TelegramJsonAdapter()
-        : platform === Platform.WHATSAPP
-          ? new WhatsAppTxtAdapter()
-          : platform === Platform.UNKNOWN
-            ? new NoopAdapter()
-            : null;
+                : platform === Platform.INSTAGRAM
+                  ? new InstagramJsonAdapter()
+                  : platform === Platform.SNAPCHAT
+                    ? new SnapchatJsonAdapter()
+                    : platform === Platform.LINKEDIN
+                      ? new LinkedInMessagesCsvAdapter()
+                      : platform === Platform.TELEGRAM
+                        ? new TelegramJsonAdapter()
+                        : platform === Platform.SLACK
+                          ? new SlackJsonAdapter()
+                          : platform === Platform.WHATSAPP
+                            ? new WhatsAppTxtAdapter()
+                            : platform === Platform.UNKNOWN
+                              ? new NoopAdapter()
+                              : null;
   if (!adapter) {
     process.stderr.write(
       `Adapter not implemented for platform: ${platform}\n` +

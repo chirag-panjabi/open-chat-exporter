@@ -17,10 +17,11 @@ The system will use a plug-and-play adapter model. Each adapter is responsible f
 **Core Adapters:**
 *   **WhatsApp:** Parses standard `.txt` export logs (handling edge cases around timestamps, systemic messages like "deleted this message", and multiline texts).
 *   **Telegram:** Parses the Telegram desktop `result.json` export.
-*   **Discord / Slack:** Parses their native JSON dumps.
+*   **Discord:** Parses offline JSON exports (e.g., DiscordChatExporter-style JSON or platform exports).
+*   **Slack:** Parses Slack export JSON files that contain message arrays (typically per-channel/per-day files). Note: full workspace exports are often **admin/owner-gated**, so the CLI targets single message JSON files rather than requiring whole-workspace access.
 
 **Mobile / Ecosystem Adapters (Future):**
-*   **iMessage:** Connects to or imports a local `chat.db` SQLite file.
+*   **iMessage (V1 target):** Imports a local `chat.db` SQLite file from macOS Messages (most accessible path for users with a Mac). iOS backups and device-forensics flows remain out-of-scope for the baseline adapter.
 *   **Signal:** Parses the decrypted backup format (requires user to provide passphrase).
 *   **WeChat:** Parses the exported chat history databases.
 *   **Line:** Parses the native `.txt` chat backup files.
@@ -35,6 +36,26 @@ The system will use a plug-and-play adapter model. Each adapter is responsible f
 *   **X (Twitter) DMs:** Parses the `direct-messages.js` file from the X data archive.
 *   **Skype:** Parses the `messages.json` file exported from Skype data download.
 *   **LinkedIn Messaging:** Parses the `messages.csv` export from the LinkedIn data privacy archive.
+
+### Export Accessibility (Reality Check)
+In practice, the best V1 adapters target artifacts that a **regular user** can obtain without admin roles, device rooting/jailbreaking, or compliance tooling.
+
+**Generally user-accessible (self-serve downloads):**
+* WhatsApp `.txt` chat exports
+* Telegram desktop export (`result.json`)
+* Meta exports (Facebook Messenger / Instagram) via "Download Your Information"
+* Google Takeout exports (Google Chat)
+* Snapchat "My Data" export (`chat_history.json`)
+* X/Twitter data archive (`direct-messages.js`)
+* LinkedIn data export (`messages.csv`)
+* Skype data export (`messages.json`)
+
+**Often gated / harder:**
+* Slack full workspace exports are frequently **owner/admin** gated; DM coverage varies by workspace settings. Prefer parsing the smallest exported message JSON files when available.
+* Microsoft Teams exports may require Microsoft 365 compliance/eDiscovery access, depending on tenant and settings.
+
+**Device/ecosystem dependent:**
+* iMessage is most accessible via macOS Messages `chat.db` on a Mac with Messages enabled; iOS backups/device extraction flows are significantly more complex.
 
 ### B. The Internal Unified Schema
 Regardless of where the data came from, it is mapped into a strict internal representation designed to preserve critical conversational context while minimizing token bloat.
