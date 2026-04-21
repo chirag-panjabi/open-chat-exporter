@@ -40,3 +40,7 @@
 ## Phase 9: Adapter (Snapchat JSON)
 - [x] **Task 9.1:** Write `src/adapters/snapchat/SnapchatJsonAdapter.ts` using streaming JSON parsing (Snapchat `chat_history.json`).
 - [x] **Task 9.2:** Wire `--platform SNAPCHAT` into the CLI and add a synthetic fixture + smoke test.
+
+## Phase 10: Adapter (LinkedIn Messages CSV)
+- [x] **Task 10.1:** Write `src/adapters/linkedin/LinkedInMessagesCsvAdapter.ts` using streaming CSV parsing (including quoted newlines).
+- [x] **Task 10.2:** Wire `--platform LINKEDIN` into the CLI and add a synthetic fixture + smoke test.

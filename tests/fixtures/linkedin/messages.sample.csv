@@ -1,0 +1,5 @@
+From,To,Date,Content,Media Type,Attachments,Type
+"Alice","Bob","2026-04-19T10:00:00Z","Hello, Bob
+This is a multiline message.","TEXT","",
+"Bob","Alice","2026-04-19T10:01:00Z","Here's an image","PHOTO","image1.jpg",
+"LinkedIn","Alice","2026-04-19T10:02:00Z","Bob joined the conversation","TEXT","","SYSTEM"

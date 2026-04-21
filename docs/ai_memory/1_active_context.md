@@ -1,5 +1,5 @@
 # Active Context for AI Agents
-**Last Updated:** April 20, 2026
+**Last Updated:** April 21, 2026
 
 ## Project Identity
 **Unified Chat Exporter (V1: TypeScript)**
@@ -14,6 +14,7 @@ We now have end-to-end conversion with streaming adapters and smoke tests for:
 - Facebook Messenger JSON (`FB_MESSENGER`)
 - Instagram JSON (`INSTAGRAM`)
 - Snapchat JSON (`SNAPCHAT`)
+- LinkedIn Messages CSV (`LINKEDIN`)
 
 ## Next High-Level Objectives
 - [x] Pick the exact JavaScript/TypeScript runtime (Bun).
@@ -27,6 +28,7 @@ We now have end-to-end conversion with streaming adapters and smoke tests for:
 - [x] Write the Facebook Messenger adapter (streaming JSON over `messages[]`).
 - [x] Write the Instagram adapter (streaming JSON over `messages[]`).
 - [x] Write the Snapchat adapter (streaming JSON `chat_history.json`).
+- [x] Write the LinkedIn adapter (streaming CSV `messages.csv`).
 - [ ] Implement the next platform adapter.
 
 ## Recent Decisions Log:

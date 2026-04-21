@@ -2,6 +2,7 @@ import { basename } from 'node:path';
 import { DiscordJsonAdapter } from '../adapters/discord/DiscordJsonAdapter';
 import { FacebookMessengerJsonAdapter } from '../adapters/fb_messenger/FacebookMessengerJsonAdapter';
 import { InstagramJsonAdapter } from '../adapters/instagram/InstagramJsonAdapter';
+import { LinkedInMessagesCsvAdapter } from '../adapters/linkedin/LinkedInMessagesCsvAdapter';
 import { NoopAdapter } from '../adapters/noop/NoopAdapter';
 import { SnapchatJsonAdapter } from '../adapters/snapchat/SnapchatJsonAdapter';
 import { TelegramJsonAdapter } from '../adapters/telegram/TelegramJsonAdapter';
@@ -145,6 +146,8 @@ async function main(): Promise<void> {
           ? new InstagramJsonAdapter()
           : platform === Platform.SNAPCHAT
             ? new SnapchatJsonAdapter()
+            : platform === Platform.LINKEDIN
+              ? new LinkedInMessagesCsvAdapter()
       : platform === Platform.TELEGRAM
         ? new TelegramJsonAdapter()
         : platform === Platform.WHATSAPP
