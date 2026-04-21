@@ -1,0 +1,23 @@
+{
+  "messages": [
+    {
+      "creator": { "name": "Alice" },
+      "createTime": "2026-04-19T10:00:00Z",
+      "text": "Hello from Google Chat fixture.",
+      "type": "MESSAGE"
+    },
+    {
+      "creator": { "name": "Bob" },
+      "createTime": "2026-04-19T10:01:00Z",
+      "text": "File attached.",
+      "attachments": [{ "name": "doc.pdf" }],
+      "type": "MESSAGE"
+    },
+    {
+      "creator": { "name": "System" },
+      "createTime": "2026-04-19T10:02:00Z",
+      "text": "Alice added Bob",
+      "type": "EVENT"
+    }
+  ]
+}

@@ -44,3 +44,7 @@
 ## Phase 10: Adapter (LinkedIn Messages CSV)
 - [x] **Task 10.1:** Write `src/adapters/linkedin/LinkedInMessagesCsvAdapter.ts` using streaming CSV parsing (including quoted newlines).
 - [x] **Task 10.2:** Wire `--platform LINKEDIN` into the CLI and add a synthetic fixture + smoke test.
+
+## Phase 11: Adapter (Google Chat JSON)
+- [x] **Task 11.1:** Write `src/adapters/goog_chat/GoogleChatJsonAdapter.ts` using streaming JSON parsing over `messages[]`.
+- [x] **Task 11.2:** Wire `--platform GOOG_CHAT` into the CLI and add a synthetic fixture + smoke test.

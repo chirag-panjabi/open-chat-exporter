@@ -12,6 +12,7 @@ We now have end-to-end conversion with streaming adapters and smoke tests for:
 - WhatsApp TXT (`WHATSAPP`)
 - Telegram JSON (`TELEGRAM`)
 - Facebook Messenger JSON (`FB_MESSENGER`)
+- Google Chat JSON (`GOOG_CHAT`)
 - Instagram JSON (`INSTAGRAM`)
 - Snapchat JSON (`SNAPCHAT`)
 - LinkedIn Messages CSV (`LINKEDIN`)
@@ -26,6 +27,7 @@ We now have end-to-end conversion with streaming adapters and smoke tests for:
 - [x] Write the WhatsApp `.txt` adapter (streaming, multiline-safe).
 - [x] Write the Telegram `result.json` adapter (streaming, rich text flattening).
 - [x] Write the Facebook Messenger adapter (streaming JSON over `messages[]`).
+- [x] Write the Google Chat adapter (streaming JSON over `messages[]`).
 - [x] Write the Instagram adapter (streaming JSON over `messages[]`).
 - [x] Write the Snapchat adapter (streaming JSON `chat_history.json`).
 - [x] Write the LinkedIn adapter (streaming CSV `messages.csv`).
