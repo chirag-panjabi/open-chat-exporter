@@ -316,10 +316,10 @@ async function main(): Promise<void> {
                               : platform === Platform.WHATSAPP
                                 ? isWhatsAppSqlite
                                   ? new WhatsAppIosChatStorageDbAdapter({
-                                      chatJid: args.waChatJid,
-                                      chatPk: args.waChatPk,
-                                      myName: args.myName,
-                                    })
+                                    chatJid: args.waChatJid,
+                                    chatPk: args.waChatPk,
+                                    myName: args.myName,
+                                  })
                                   : new WhatsAppTxtAdapter()
                                 : platform === Platform.UNKNOWN
                                   ? new NoopAdapter()
