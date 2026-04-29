@@ -1,0 +1,17 @@
+{
+    "id": "m3",
+    "created_time": "2026-04-21T12:06:00+0000",
+    "from": {
+        "id": "u1",
+        "name": "Alice Example"
+    },
+    "message": "",
+    "attachments": {
+        "data": [
+            {
+                "mime_type": "image/jpeg",
+                "name": "photo.jpg"
+            }
+        ]
+    }
+}

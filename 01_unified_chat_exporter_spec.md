@@ -57,6 +57,53 @@ In practice, the best V1 adapters target artifacts that a **regular user** can o
 **Device/ecosystem dependent:**
 * iMessage is most accessible via macOS Messages `chat.db` on a Mac with Messages enabled; iOS backups/device extraction flows are significantly more complex.
 
+### WhatsApp Reply Context (Future Plan)
+The baseline WhatsApp adapter targets the user-exportable `.txt` file, but that format does **not** reliably preserve reply/quote relationships. This means we often cannot populate `context.reply_to_message_id` from `.txt` alone.
+
+**Inspiration (iMazing):** iMazing’s WhatsApp export workflow is built around pulling WhatsApp data from an iTunes/iMazing iOS backup (including encrypted backups), then exporting in multiple formats (PDF/CSV/TXT/RSMF) with rich metadata. For our purposes, the key takeaway is: **the reply graph is only recoverable when you ingest WhatsApp’s underlying databases**, not the UI-oriented `.txt` export.
+
+**Planned approach for reply-aware WhatsApp imports:**
+* **iOS backup path:** add an adapter that reads an extracted WhatsApp chat database from a decrypted iOS backup (user supplies the extracted DB file path). Use the database’s quote/reply reference fields to map each message to its replied-to message and set `context.reply_to_message_id`.
+* **Android DB path:** add a parallel adapter for decrypted WhatsApp databases (e.g., `msgstore.db` or equivalent decrypted form). Same goal: map quote/reply references to `context.reply_to_message_id`.
+* **Streaming-safe resolution:** if reply references use internal keys/row IDs, resolve them via:
+	* a **two-pass** strategy that builds an on-disk lookup (SQLite temp table or KV file) from internal message key → unified `message_id`, then replays messages to fill `reply_to_message_id`, or
+	* a **single-pass** strategy with a bounded cache (best-effort; unresolved replies become `null`).
+
+**Non-negotiables still apply:** no full-db loads into memory; media remains excluded in V1 (only `metadata.has_attachment`).
+
+### Meta (Facebook Messenger / Instagram) Reply Context (Research)
+Meta’s **downloadable archives** ("Download Your Information" JSON/HTML) appear to be designed for human-readable history and analysis, and commonly include fields like `sender_name`, `timestamp_ms`, `content`, `reactions`, and media references — but **do not consistently expose a stable message ID + reply pointer** in a way that would let us populate `context.reply_to_message_id` with high confidence.
+
+However, Meta’s **official Conversations API** for Messenger/Instagram business messaging *does* expose reply linkage at the API layer when you fetch message details: a message can include a `reply_to` object (with a message identifier like `mid` and an `is_self_reply` flag).
+
+**Practical consequence:**
+* For offline *"Download Your Information"* exports, `context.reply_to_message_id` will generally remain `null` (unless a future export schema is found that includes explicit reply references).
+* For eligible Page / Instagram Professional account conversations, an **API-based adapter** could populate reply graphs — but this is **not a typical self-serve export** (requires tokens/app setup and has platform limitations, including only being able to query details for the most recent messages).
+
+#### Phase 18 (Implemented, Optional): Meta Conversations API Adapter
+This adapter is intentionally **separate** from offline Meta exports. It exists only to support reply graphs when Meta’s API exposes `reply_to`.
+
+**How it’s invoked (CLI):**
+* `--platform META_CONVERSATIONS_API`
+* `--input <path>` points to a small **non-secret JSON config** (IDs + selection parameters)
+
+**Auth / secrets (runtime env vars only):**
+* `META_ACCESS_TOKEN` (required for live API calls)
+* `META_GRAPH_API_VERSION` (optional; default is set by adapter)
+
+**Config file (minimal contract):**
+* `surface`: `FB_MESSENGER | INSTAGRAM` (sets `chat_info.platform`)
+* `conversation_id`: string (required)
+* Optional: `chat_name`, `since_utc`, `until_utc`, `limit`, `max_messages`, `max_enrich_requests`
+
+**Reply mapping behavior:**
+* Uses Meta message ID as `message_id`.
+* When message details include `reply_to.mid`, sets `context.reply_to_message_id = reply_to.mid`.
+* If reply details are missing/unavailable (common outside Meta’s “recent message” window), falls back to `null`.
+
+**Testability (no real tokens/exports):**
+* Smoke tests run in a **fixture mode** via `META_API_FIXTURE_DIR` to avoid network calls and avoid requiring credentials.
+
 ### B. The Internal Unified Schema
 Regardless of where the data came from, it is mapped into a strict internal representation designed to preserve critical conversational context while minimizing token bloat.
 
@@ -80,7 +127,7 @@ This intentionally avoids repeating `platform` and `chat_name` on every message 
 
 ### C. The Scrubbing & Pre-Processing Engine
 Give the user local, absolute command over the data before it's finalized.
-*   **Identity Resolution & Merging:** A configuration system (`contacts.yaml` or CLI args) that maps disparate handles to a single entity (e.g., merging `+1-555...` on WhatsApp and `Sarah#1234` on Discord to `[User_Sarah]`). This is vital for cross-platform model coherence.
+*   **Identity Resolution & Merging:** A configuration system (`identities.yaml`) that maps disparate handles to a single entity (e.g., merging `+1-555...` on WhatsApp and `Sarah#1234` on Discord to `[User_Sarah]`). This is vital for cross-platform model coherence.
 *   **Anonymization Engine:** Search and replace specific names with placeholders like `[User_A]` or `[User_B]` to ensure privacy before sending to an LLM.
 *   **Data Cleanup:** Strip out attachment placeholders (e.g., `<Media omitted>`), remove system messages, or drop extremely short messages (e.g., "ok", "k").
 *   **Time-Boxing:** Select specific date ranges for export.
@@ -92,6 +139,25 @@ The final payload can be downloaded in formats highly optimized for AI workflows
 *   **Clean Markdown (`.md`):** E.g., `**[User_A] (14:32)**: Here we go again.` Includes inline context for reactions and thread replies (perfect for pasting into ChatGPT/Claude).
 *   **Structured JSON (`.json`):** A root wrapper object (`export_meta`, `chat_info`, `messages`) matching `03_unified_schema_definition.md`. (Perfect for the Sovereign GraphRAG backend).
 *   **CSV / TSV:** For manual spreadsheet analysis.
+
+#### Phase 19 (Next): Streaming Scrubbing + Markdown/CSV Writers
+This phase adds a streaming scrub step (identity resolution + optional anonymization + filters) and adds two additional output writers.
+
+**CLI additions (contract):**
+* `--output-format <fmt>` where `<fmt>` is `json | md | csv` (default: `json`).
+* `--identities <path>` path to `identities.yaml` (see `03_unified_schema_definition.md`).
+* `--anonymize` when set, replaces alias occurrences in `content` with `sender.resolved_name` (best-effort).
+* Optional streaming-safe filters:
+	* `--since-utc <iso>` / `--until-utc <iso>`
+	* `--drop-system` (omit `metadata.is_system === true`)
+	* `--min-content-length <n>` (omit very short messages)
+
+**Writer behavior (minimal/stable):**
+* `json` remains the authoritative unified export wrapper (`export_meta`, `chat_info`, `messages[]`).
+* `md` is human/LLM friendly and ordered chronologically.
+* `csv` is analysis friendly and uses a stable header + proper escaping.
+
+**Non-negotiable constraint:** scrub + writers must operate on an `AsyncGenerator` stream; never buffer `messages[]` in memory.
 
 ## 2. Red Team Analysis & Risk Mitigation (Failure Modes)
 Before executing on the tech stack, we proactively "Red Teamed" the spec to find architectural vulnerabilities, edge cases, and catastrophic failure modes:

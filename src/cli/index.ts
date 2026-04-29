@@ -13,20 +13,44 @@ import { TelegramJsonAdapter } from '../adapters/telegram/TelegramJsonAdapter';
 import { WhatsAppTxtAdapter } from '../adapters/whatsapp/WhatsAppTxtAdapter';
 import { XTwitterDirectMessagesJsAdapter } from '../adapters/x_twitter/XTwitterDirectMessagesJsAdapter';
 import { IMessageChatDbAdapter } from '../adapters/imessage/IMessageChatDbAdapter';
+import {
+  loadMetaConversationsApiConfig,
+  MetaConversationsApiAdapter,
+  type MetaConversationsApiConfig,
+} from '../adapters/meta_conversations_api/MetaConversationsApiAdapter';
 import type { AdapterInput } from '../core/BaseAdapter';
+import {
+  normalizeIdentitiesFile,
+  scrubMessages,
+  type IdentitiesFile,
+  type ScrubOptions,
+} from '../core/scrubMessages';
+import { writeUnifiedExportCsv } from '../core/writeUnifiedExportCsv';
 import { writeUnifiedExportJson } from '../core/writeUnifiedExportJson';
+import { writeUnifiedExportMarkdown } from '../core/writeUnifiedExportMarkdown';
+import type { IUnifiedMessage } from '../types';
 import { ChatType, Platform } from '../types';
+import YAML from 'yaml';
+
+type OutputFormat = 'json' | 'md' | 'csv';
 
 type Args = {
   command?: string;
   input?: string;
   output?: string;
+  outputFormat?: string;
   platform?: string;
   chatName?: string;
   chatType?: string;
   participantCount?: string;
   chatGuid?: string;
   myName?: string;
+  identities?: string;
+  anonymize?: boolean;
+  sinceUtc?: string;
+  untilUtc?: string;
+  dropSystem?: boolean;
+  minContentLength?: string;
 };
 
 function parseArgs(argv: string[]): Args {
@@ -40,33 +64,76 @@ function parseArgs(argv: string[]): Args {
     if (!token.startsWith('--')) continue;
 
     const [flag, inlineValue] = token.split('=', 2);
-    const value = inlineValue ?? rest[i + 1];
-    if (inlineValue == null) i++;
+    let value: string | undefined = inlineValue;
+    let consumedNext = false;
+    if (inlineValue == null) {
+      const next = rest[i + 1];
+      if (next != null && !next.startsWith('--')) {
+        value = next;
+        consumedNext = true;
+      }
+    }
 
     switch (flag) {
       case '--input':
         args.input = value;
+        if (consumedNext) i++;
         break;
       case '--output':
         args.output = value;
+        if (consumedNext) i++;
+        break;
+      case '--output-format':
+        args.outputFormat = value;
+        if (consumedNext) i++;
         break;
       case '--platform':
         args.platform = value;
+        if (consumedNext) i++;
         break;
       case '--chat-name':
         args.chatName = value;
+        if (consumedNext) i++;
         break;
       case '--chat-type':
         args.chatType = value;
+        if (consumedNext) i++;
         break;
       case '--participant-count':
         args.participantCount = value;
+        if (consumedNext) i++;
         break;
       case '--chat-guid':
         args.chatGuid = value;
+        if (consumedNext) i++;
         break;
       case '--my-name':
         args.myName = value;
+        if (consumedNext) i++;
+        break;
+      case '--identities':
+        args.identities = value;
+        if (consumedNext) i++;
+        break;
+      case '--anonymize':
+        args.anonymize = value == null ? true : value.trim().toLowerCase() !== 'false';
+        if (consumedNext) i++;
+        break;
+      case '--since-utc':
+        args.sinceUtc = value;
+        if (consumedNext) i++;
+        break;
+      case '--until-utc':
+        args.untilUtc = value;
+        if (consumedNext) i++;
+        break;
+      case '--drop-system':
+        args.dropSystem = value == null ? true : value.trim().toLowerCase() !== 'false';
+        if (consumedNext) i++;
+        break;
+      case '--min-content-length':
+        args.minContentLength = value;
+        if (consumedNext) i++;
         break;
       default:
         break;
@@ -88,6 +155,22 @@ function normalizeChatType(chatType?: string): ChatType {
   return (ChatType as Record<string, ChatType>)[key] ?? ChatType.GROUP;
 }
 
+function normalizeOutputFormat(raw?: string): OutputFormat {
+  if (!raw) return 'json';
+  const key = raw.trim().toLowerCase();
+  if (key === 'json' || key === 'md' || key === 'csv') return key;
+  return 'json';
+}
+
+async function loadIdentitiesYaml(filePath: string): Promise<IdentitiesFile> {
+  const file = Bun.file(filePath);
+  const exists = await file.exists();
+  if (!exists) throw new Error(`identities.yaml not found: ${filePath}`);
+  const text = await file.text();
+  const raw = YAML.parse(text) as unknown;
+  return normalizeIdentitiesFile(raw);
+}
+
 function usage(): string {
   return [
     'Unified Chat Exporter (WIP)',
@@ -97,13 +180,24 @@ function usage(): string {
     '',
     'Options:',
     '  --input <path>             Path to an export file (or folder for future adapters)',
-    '  --platform <PLATFORM>      e.g. WHATSAPP, DISCORD, TELEGRAM, SLACK, IMESSAGE',
-    '  --output <path>            Write unified JSON to a file (default: stdout)',
+    '  --platform <PLATFORM>      e.g. WHATSAPP, DISCORD, TELEGRAM, SLACK, IMESSAGE, META_CONVERSATIONS_API',
+    '  --output <path>            Write output to a file (default: stdout)',
+    '  --output-format <fmt>      json|md|csv (default: json)',
     '  --chat-name <name>         Overrides chat_info.chat_name (default: derived from input filename)',
     '  --chat-type <type>         DIRECT|GROUP|CHANNEL (default: GROUP)',
     '  --participant-count <n>    Optional participant count',
+    '  --identities <path>        Path to identities.yaml (for sender.resolved_name)',
+    '  --anonymize                Replace alias occurrences in content with resolved_name',
+    '  --since-utc <iso>          Drop messages older than this ISO timestamp (UTC)',
+    '  --until-utc <iso>          Drop messages newer than this ISO timestamp (UTC)',
+    '  --drop-system              Drop messages where metadata.is_system is true',
+    '  --min-content-length <n>   Drop messages with trimmed content shorter than n',
     '  --chat-guid <guid>         (IMESSAGE) chat.guid to export (required)',
     '  --my-name <name>           (IMESSAGE) display name for your outgoing messages (default: Me)',
+    '',
+    'Meta Conversations API notes:',
+    '  - Requires META_ACCESS_TOKEN (except when using META_API_FIXTURE_DIR for tests)',
+    '  - --input should point to a small JSON config (non-secret identifiers + selection params)',
     '',
     'Note: Not all adapters are implemented yet. Use --platform UNKNOWN to test the pipeline.',
   ].join('\n');
@@ -138,6 +232,9 @@ async function main(): Promise<void> {
 
   const platform = normalizePlatform(args.platform);
   const chatType = normalizeChatType(args.chatType);
+  const outputFormat = normalizeOutputFormat(args.outputFormat);
+
+  let metaApiConfig: MetaConversationsApiConfig | undefined;
 
   if (platform === Platform.IMESSAGE && !args.chatGuid) {
     process.stderr.write(`Missing required flag for IMESSAGE: --chat-guid\n\n${usage()}\n`);
@@ -151,6 +248,10 @@ async function main(): Promise<void> {
     process.stderr.write(`Input path does not exist: ${args.input}\n`);
     process.exitCode = 2;
     return;
+  }
+
+  if (platform === Platform.META_CONVERSATIONS_API) {
+    metaApiConfig = await loadMetaConversationsApiConfig(args.input);
   }
 
   const input: AdapterInput = {
@@ -184,11 +285,13 @@ async function main(): Promise<void> {
                           ? new SlackJsonAdapter()
                           : platform === Platform.IMESSAGE
                             ? new IMessageChatDbAdapter({ chatGuid: args.chatGuid!, myName: args.myName })
-                          : platform === Platform.WHATSAPP
-                            ? new WhatsAppTxtAdapter()
-                            : platform === Platform.UNKNOWN
-                              ? new NoopAdapter()
-                              : null;
+                            : platform === Platform.META_CONVERSATIONS_API
+                              ? new MetaConversationsApiAdapter({ config: metaApiConfig! })
+                              : platform === Platform.WHATSAPP
+                                ? new WhatsAppTxtAdapter()
+                                : platform === Platform.UNKNOWN
+                                  ? new NoopAdapter()
+                                  : null;
   if (!adapter) {
     process.stderr.write(
       `Adapter not implemented for platform: ${platform}\n` +
@@ -199,7 +302,9 @@ async function main(): Promise<void> {
   }
 
   const chatName =
-    args.chatName ?? (platform === Platform.IMESSAGE ? (args.chatGuid ?? basename(args.input)) : basename(args.input));
+    args.chatName ??
+    metaApiConfig?.chat_name ??
+    (platform === Platform.IMESSAGE ? (args.chatGuid ?? basename(args.input)) : basename(args.input));
   const participantCount = args.participantCount ? Number(args.participantCount) : undefined;
 
   if (args.participantCount && (Number.isNaN(participantCount) || participantCount! < 0)) {
@@ -208,21 +313,55 @@ async function main(): Promise<void> {
     return;
   }
 
-  await writeUnifiedExportJson({
-    exportMeta: {
-      version: '1.0',
-      exporter_version: '0.1.0',
-      exported_at: new Date().toISOString(),
-    },
-    chatInfo: {
-      platform,
-      chat_name: chatName,
-      chat_type: chatType,
-      participant_count: participantCount,
-    },
-    messages: adapter.parseMessages(input),
-    outputPath: args.output,
-  });
+  const minContentLength = args.minContentLength ? Number(args.minContentLength) : undefined;
+  if (args.minContentLength && (Number.isNaN(minContentLength) || minContentLength! < 0)) {
+    process.stderr.write(`Invalid --min-content-length: ${args.minContentLength}\n`);
+    process.exitCode = 2;
+    return;
+  }
+
+  const identities = args.identities ? await loadIdentitiesYaml(args.identities) : undefined;
+  const scrubOpts: ScrubOptions = {
+    identities,
+    anonymize: args.anonymize,
+    sinceUtc: args.sinceUtc,
+    untilUtc: args.untilUtc,
+    dropSystem: args.dropSystem,
+    minContentLength,
+  };
+
+  let messages: AsyncIterable<IUnifiedMessage> = adapter.parseMessages(input);
+  if (
+    scrubOpts.identities ||
+    scrubOpts.anonymize ||
+    scrubOpts.sinceUtc ||
+    scrubOpts.untilUtc ||
+    scrubOpts.dropSystem ||
+    scrubOpts.minContentLength != null
+  ) {
+    messages = scrubMessages(messages, scrubOpts);
+  }
+
+  const exportMeta = {
+    version: '1.0',
+    exporter_version: '0.1.0',
+    exported_at: new Date().toISOString(),
+  };
+
+  const chatInfo = {
+    platform: platform === Platform.META_CONVERSATIONS_API ? metaApiConfig!.surface : platform,
+    chat_name: chatName,
+    chat_type: chatType,
+    participant_count: participantCount,
+  };
+
+  if (outputFormat === 'md') {
+    await writeUnifiedExportMarkdown({ exportMeta, chatInfo, messages, outputPath: args.output });
+  } else if (outputFormat === 'csv') {
+    await writeUnifiedExportCsv({ exportMeta, chatInfo, messages, outputPath: args.output });
+  } else {
+    await writeUnifiedExportJson({ exportMeta, chatInfo, messages, outputPath: args.output });
+  }
 }
 
 main().catch((err) => {

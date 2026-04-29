@@ -70,3 +70,27 @@
 - [x] **Task 16.2:** Implement a streaming-safe iMessage adapter (no full-table loads) that maps into the unified schema.
 - [x] **Task 16.3:** Add synthetic fixtures + smoke test for iMessage.
 - [x] **Task 16.4:** Wire `--platform IMESSAGE` into the CLI.
+
+## Phase 17: Adapter (WhatsApp - Reply-Aware via DB/Backups)
+- [x] **Task 17.1:** Document the limitations of WhatsApp `.txt` exports for reply/quote mapping and define the DB-first approach (iOS backup / decrypted DB) to populate `context.reply_to_message_id`.
+- [ ] **Task 17.2:** Add a WhatsApp iOS DB adapter that reads an extracted WhatsApp chat database file from a decrypted iOS backup (user provides the extracted DB path).
+- [ ] **Task 17.3:** Implement a streaming-safe reply resolution strategy (two-pass with on-disk key→`message_id` lookup, or best-effort bounded cache).
+- [ ] **Task 17.4:** Add synthetic fixtures + smoke test proving reply-to mapping works end-to-end without committing real exports.
+- [x] **Task 17.5:** Update spec/docs to reflect the reply-aware WhatsApp import path (inspired by iMazing’s backup-based extraction workflow).
+
+## Phase 18: Adapter (Meta Conversations API - Reply-Aware, Optional)
+- [x] **Task 18.1:** Document scope/constraints: eligible surfaces (Page + Instagram Professional messaging), auth model, and platform limitations (notably: message detail access is limited to recent messages).
+- [x] **Task 18.2:** Design the adapter inputs for CLI (tokens/config), ensuring secrets are never written to repo and can be provided via env vars.
+- [x] **Task 18.3:** Implement a Conversations API adapter that streams/paginates messages (no full-history in-memory loads) and maps into the unified schema.
+- [x] **Task 18.4:** Populate `context.reply_to_message_id` by resolving `reply_to.mid` → unified `message_id` (best-effort, with clear null fallback when unresolved).
+- [x] **Task 18.5:** Add synthetic fixtures + smoke test using recorded/handcrafted JSON responses (no real exports/tokens) to validate reply-to mapping.
+- [x] **Task 18.6:** Update spec/docs to clearly distinguish offline Meta exports (reply graphs typically unavailable) vs API ingestion (reply graphs possible but gated/limited).
+
+## Phase 19: Scrubbing + Output Formats (Markdown/CSV)
+- [x] **Task 19.1:** Define CLI contract for scrubbing + output formats (flags, config file formats, default behaviors) and update the core spec accordingly.
+- [x] **Task 19.2:** Implement identity resolution via `identities.yaml` → populate `sender.resolved_name` (streaming-safe).
+- [x] **Task 19.3:** Implement optional anonymization pass that replaces alias strings in `content` with `resolved_name` (best-effort, boundary-aware).
+- [x] **Task 19.4:** Implement time-boxing + cleanup filters (e.g., `--since/--until`, drop system messages, min content length) as a streaming transform.
+- [x] **Task 19.5:** Add Markdown writer (`--output-format md`) with a stable, minimal format.
+- [x] **Task 19.6:** Add CSV writer (`--output-format csv`) with correct escaping and a stable header.
+- [x] **Task 19.7:** Add synthetic fixtures + smoke tests proving scrub + MD/CSV output works end-to-end without loading exports into memory.

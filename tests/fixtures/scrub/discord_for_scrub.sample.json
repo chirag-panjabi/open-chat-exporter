@@ -1,0 +1,53 @@
+{
+    "guild": {
+        "id": "g1",
+        "name": "Example Guild"
+    },
+    "channel": {
+        "id": "c1",
+        "name": "general",
+        "type": "TextChannel"
+    },
+    "exportedAt": "2024-01-01T00:06:00.000+00:00",
+    "messages": [
+        {
+            "id": "200000000000000001",
+            "type": "Default",
+            "timestamp": "2024-01-01T00:00:00.000+00:00",
+            "content": "Hi Alice#1234 — this content should be anonymized.",
+            "author": {
+                "id": "u1",
+                "name": "Alice",
+                "discriminator": "1234"
+            },
+            "attachments": []
+        },
+        {
+            "id": "200000000000000002",
+            "type": "Reply",
+            "timestamp": "2024-01-01T00:01:00.000+00:00",
+            "content": "Replying to Alice#1234.",
+            "author": {
+                "id": "u2",
+                "name": "Bob",
+                "discriminator": "0000"
+            },
+            "attachments": [],
+            "reference": {
+                "messageId": "200000000000000001"
+            }
+        },
+        {
+            "id": "200000000000000003",
+            "type": "ChannelPinnedMessage",
+            "timestamp": "2024-01-01T00:02:00.000+00:00",
+            "content": "A message was pinned.",
+            "author": {
+                "id": "u3",
+                "name": "System",
+                "discriminator": "0000"
+            },
+            "attachments": []
+        }
+    ]
+}

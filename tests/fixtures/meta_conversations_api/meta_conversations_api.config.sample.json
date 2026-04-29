@@ -1,0 +1,9 @@
+{
+    "surface": "FB_MESSENGER",
+    "conversation_id": "C_123",
+    "account_id": "P_999",
+    "chat_name": "Meta Conversations API fixture",
+    "include_reply_to": true,
+    "enrich_message_details": true,
+    "limit": 2
+}

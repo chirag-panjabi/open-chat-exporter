@@ -1,0 +1,9 @@
+identities:
+  - resolved_name: "[User_Alice]"
+    aliases:
+      - "Alice#1234"
+      - "u1"
+  - resolved_name: "[User_Bob]"
+    aliases:
+      - "Bob"
+      - "u2"

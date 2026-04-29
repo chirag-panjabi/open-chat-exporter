@@ -10,7 +10,7 @@ This repository is built using **Spec-Driven AI Development**. Because multiple 
 
 2.  **The "Think Then Do" Loop:**
     *   **Phase 1: Plan:** Always explain the architecture and logic of your proposed solution before writing it.
-    *   **Phase 2: Review Docs:** Cross-check your plan against `03_unified_schema_definition.md` and `02_architecture_decisions.md`. Are there any contradictions? (e.g., Does your plan use Python when we decided on TypeScript?)
+    *   **Phase 2: Review Docs:** Cross-check your plan against `03_unified_schema_definition.md` and `02_architecture_decisions.md`. Are there any contradictions? (e.g., Does your plan use Python when we decided on TypeScript?) If you add a new output format or scrub stage, update the spec/docs first.
     *   **Phase 3: Execute:** Write the code.
     *   **Phase 4: Verify:** Test the code. Write a test case or dry-run the logic. Did it fulfill the spec?
     *   **Phase 5: Update Memory:** Check off the task in `docs/ai_memory/2_progress_tracker.md` and update `docs/ai_memory/1_active_context.md`.

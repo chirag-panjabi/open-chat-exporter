@@ -8,6 +8,7 @@ This project processes **highly sensitive** personal data (chat logs, backups, c
 - iOS backups / extracted files (e.g., `ChatStorage.sqlite`, `Manifest.db`)
 - Android WhatsApp databases and keys (e.g., `msgstore.db.crypt*`, `wa.db`, `key`)
 - Any `.env` files, certificates, or API keys
+- Any API access tokens (e.g., `META_ACCESS_TOKEN`) or recorded responses containing real IDs
 
 ## How we prevent leaks
 - `.gitignore` blocks common export/database/key patterns.
@@ -23,3 +24,4 @@ This project processes **highly sensitive** personal data (chat logs, backups, c
 ## Test fixtures policy
 - Only use **synthetic** fixtures in `tests/`.
 - Avoid real-looking phone numbers/emails; use clearly fake placeholders.
+- Prefer a **fixture directory mode** for any API-backed adapter tests so CI never needs network or secrets.

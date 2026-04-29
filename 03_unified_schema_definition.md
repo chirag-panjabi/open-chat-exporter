@@ -45,7 +45,7 @@ This is the core structure. It cleanly separates the sender's identity, the mess
   "sender": {
     "id": "456789", // Native ID (if available, otherwise hash)
     "original_name": "DaveSmith#8211", // What the platform exported
-    "resolved_name": "[User_Dave]" // After our Anonymization/Identity Resolution engine runs
+    "resolved_name": "[User_Dave]" // Populated by the Scrubbing/Identity Resolution stage (not by adapters)
   },
   
   "content": "Does anyone know why the pipeline is failing?", // The raw text body (Markdown flattened)
@@ -85,4 +85,8 @@ identities:
       - "DaveSmith#8211" # Discord
       - "+1-555-019-9234" # WhatsApp
       - "david.smith" # Slack
+
+Notes:
+- Identity resolution should set `sender.resolved_name` based on the first matching alias.
+- Optional anonymization can additionally replace alias occurrences in `content` with `resolved_name` (best-effort; must remain streaming-safe).
 ```

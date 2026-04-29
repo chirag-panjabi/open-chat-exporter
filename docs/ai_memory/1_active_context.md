@@ -1,5 +1,5 @@
 # Active Context for AI Agents
-**Last Updated:** April 21, 2026
+**Last Updated:** April 22, 2026
 
 ## Project Identity
 **Unified Chat Exporter (V1: TypeScript)**
@@ -43,3 +43,12 @@ We now have end-to-end conversion with streaming adapters and smoke tests for:
 - **Language:** TypeScript V1, Rust V2.
 - **WhatsApp Strategy:** Tier 1 format (`.txt`) strips threaded replies. Placed `reply_to_message_id: null`. Tier 2 format (`.crypt15` SQL) handles real threads but requires user key extraction. Porting Python SQLite extraction logic from `KnugiHK/WhatsApp-Chat-Exporter` into TS rather than using native Python bindings.
 - **iMessage Strategy (V1):** Target macOS Messages `chat.db` SQLite as the baseline input (most user-accessible), leaving iOS backup/device workflows for later.
+- **WhatsApp Reply Strategy (Future):** The `.txt` export is insufficient for reply-to mapping. Add a DB-level WhatsApp import path (iOS backup / decrypted DB), inspired by tools like iMazing which extract WhatsApp data from iOS backups.
+- **Meta Reply Strategy (Facebook/Instagram):** "Download Your Information" exports do not appear to consistently include reply pointers / stable message IDs, so `reply_to_message_id` will generally be `null` for offline Meta exports. Meta’s official Conversations API can expose `reply_to` for eligible Page/Instagram Professional account messaging, but it is gated (token/app setup) and has platform limits (notably, message detail access is limited to recent messages).
+- **Meta API Adapter Contract (Draft):** If implemented, the Meta Conversations API adapter must take secrets via env vars (draft: `META_ACCESS_TOKEN`, optional `META_GRAPH_API_VERSION`) and accept a non-secret JSON config via `--input` containing only IDs/selection parameters.
+- **Meta API Adapter Testing:** Smoke tests run in a zero-network fixture mode via `META_API_FIXTURE_DIR` so no real tokens or exports are required in CI.
+- **Next Phase (Scrubbing + Outputs):** Implement a streaming scrub pipeline (identity resolution + optional anonymization + filters) and add Markdown/CSV writers behind `--output-format`.
+
+## Current Status
+- Phase 19 (Scrubbing + Markdown/CSV outputs) is implemented and covered by smoke tests.
+- Next focus per roadmap: Phase 17 (WhatsApp reply-aware imports via DB) remaining tasks 17.2–17.4.

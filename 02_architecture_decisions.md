@@ -67,3 +67,13 @@ Below is the chronological log of architecture and design decisions made for the
 **Date:** April 21, 2026
 **Decision:** Implement iMessage support by parsing the macOS Messages SQLite database (`chat.db`) as the baseline adapter input.
 **Reason:** This is the most user-accessible path (no device rooting/jailbreaking, no key extraction). iOS backup/database extraction workflows are fragile and highly variable; they can be supported later as optional advanced inputs, but are not required for V1.
+
+### Decision 14: Meta Reply Graphs Require API (Optional Adapter)
+**Date:** April 22, 2026
+**Decision:** Keep offline Meta exports (DYI JSON/HTML) separate from an optional, API-backed adapter (`META_CONVERSATIONS_API`) that can populate `context.reply_to_message_id` when the Conversations API provides `reply_to.mid`.
+**Reason:** Reply linkage is typically unavailable in offline archives; API access is gated/limited and must remain optional. Tests must run in a fixture mode to avoid real tokens and network in CI.
+
+### Decision 15: Scrubbing + Output Writers as Streaming Stages
+**Date:** April 22, 2026
+**Decision:** Implement scrubbing (identity resolution + optional anonymization + filters) as a streaming transform *after* adapters and *before* output writers. Add Markdown and CSV output formats behind a single `--output-format` flag.
+**Reason:** Scrubbing needs to be applied uniformly across platforms, and output formatting must not require buffering `messages[]` in memory.

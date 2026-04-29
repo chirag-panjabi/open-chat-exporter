@@ -15,6 +15,7 @@
 ## Non-Negotiables (Red Team Constraints)
 - Do not load whole exports into memory (`readFileSync`, `await file.text()`, `JSON.parse(wholeFile)` are forbidden for large datasets).
 - Media is excluded in V1: store only `metadata.has_attachment`.
+- Scrubbing + Markdown/CSV outputs must be streaming/backpressure-safe (no buffering `messages[]`).
 
 ## Open Source Safety
 - Never commit real user chat exports, databases, backups, or decryption keys.

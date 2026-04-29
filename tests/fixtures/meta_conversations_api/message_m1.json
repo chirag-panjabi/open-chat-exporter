@@ -1,0 +1,9 @@
+{
+    "id": "m1",
+    "created_time": "2026-04-21T12:00:00+0000",
+    "from": {
+        "id": "u1",
+        "name": "Alice Example"
+    },
+    "message": "Hello from Meta API fixture."
+}
