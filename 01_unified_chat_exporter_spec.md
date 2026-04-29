@@ -63,7 +63,7 @@ The baseline WhatsApp adapter targets the user-exportable `.txt` file, but that 
 **Inspiration (iMazing):** iMazing’s WhatsApp export workflow is built around pulling WhatsApp data from an iTunes/iMazing iOS backup (including encrypted backups), then exporting in multiple formats (PDF/CSV/TXT/RSMF) with rich metadata. For our purposes, the key takeaway is: **the reply graph is only recoverable when you ingest WhatsApp’s underlying databases**, not the UI-oriented `.txt` export.
 
 **Planned approach for reply-aware WhatsApp imports:**
-* **iOS backup path:** add an adapter that reads an extracted WhatsApp chat database from a decrypted iOS backup (user supplies the extracted DB file path). Use the database’s quote/reply reference fields to map each message to its replied-to message and set `context.reply_to_message_id`.
+* **iOS backup path (Implemented):** an adapter reads an extracted WhatsApp iOS chat database (`ChatStorage.sqlite`) from a decrypted iOS backup (user supplies the extracted DB file path). It uses the database’s quote/reply reference fields to map each message to its replied-to message and set `context.reply_to_message_id` (best-effort).
 * **Android DB path:** add a parallel adapter for decrypted WhatsApp databases (e.g., `msgstore.db` or equivalent decrypted form). Same goal: map quote/reply references to `context.reply_to_message_id`.
 * **Streaming-safe resolution:** if reply references use internal keys/row IDs, resolve them via:
 	* a **two-pass** strategy that builds an on-disk lookup (SQLite temp table or KV file) from internal message key → unified `message_id`, then replays messages to fill `reply_to_message_id`, or
@@ -140,7 +140,7 @@ The final payload can be downloaded in formats highly optimized for AI workflows
 *   **Structured JSON (`.json`):** A root wrapper object (`export_meta`, `chat_info`, `messages`) matching `03_unified_schema_definition.md`. (Perfect for the Sovereign GraphRAG backend).
 *   **CSV / TSV:** For manual spreadsheet analysis.
 
-#### Phase 19 (Next): Streaming Scrubbing + Markdown/CSV Writers
+#### Phase 19 (Implemented): Streaming Scrubbing + Markdown/CSV Writers
 This phase adds a streaming scrub step (identity resolution + optional anonymization + filters) and adds two additional output writers.
 
 **CLI additions (contract):**
