@@ -137,7 +137,7 @@ Give the user local, absolute command over the data before it's finalized.
 
 ### D. The Output Formats & Chunking
 The final payload can be downloaded in formats highly optimized for AI workflows, with built-in awareness of LLM context limits:
-*   **Automated Context Chunking:** Huge chat histories are automatically sliced by time (e.g., monthly files like `chat_2024_01.md`) or by token count (e.g., using `tiktoken` to slice at exactly 100k tokens) so they don't break LLM context limits when copy-pasted.
+*   **Automated Context Chunking (Phase 20):** Huge chat histories can be sliced by time boundaries (day/month) into multiple files so they don't break LLM context limits when copy-pasted. Token-count chunking is deferred until we can define it deterministically and streaming-safe.
 *   **Clean Markdown (`.md`):** E.g., `**[User_A] (14:32)**: Here we go again.` Includes inline context for reactions and thread replies (perfect for pasting into ChatGPT/Claude).
 *   **Structured JSON (`.json`):** A root wrapper object (`export_meta`, `chat_info`, `messages`) matching `03_unified_schema_definition.md`. (Perfect for the Sovereign GraphRAG backend).
 *   **CSV / TSV:** For manual spreadsheet analysis.
@@ -160,6 +160,32 @@ This phase adds a streaming scrub step (identity resolution + optional anonymiza
 * `csv` is analysis friendly and uses a stable header + proper escaping.
 
 **Non-negotiable constraint:** scrub + writers must operate on an `AsyncGenerator` stream; never buffer `messages[]` in memory.
+
+#### Phase 20 (Planned): Output Chunking (Time-Based)
+This phase adds **time-based chunking** for `json` and `md` outputs without buffering `messages[]`.
+
+**CLI additions (contract):**
+* `--chunk-by <none|day|month>` (default: `none`).
+* `--overwrite` (optional): when set, chunk files may be replaced if they already exist.
+
+**Directory-mode output contract:**
+* If `--chunk-by` is not `none`, then `--output` is required and is treated as a **directory path**.
+* Chunking to stdout is not supported.
+* The output directory is created recursively if it does not exist.
+* If the output path exists and is a file: error.
+
+**Chunk boundaries:**
+* Chunk key is derived from `timestamp_utc` in UTC:
+	* `month`: `YYYY-MM`
+	* `day`: `YYYY-MM-DD`
+
+**File naming (non-PII, collision-resistant):**
+* Filenames use: `<platform>.<chatId>.chunk.<chunkKey>.<ext>`
+* `chatId` is a short prefix of `sha256(platform + "\n" + chat_type + "\n" + chat_name)`.
+
+**Collision policy:**
+* Default: fail-fast if a target chunk file already exists.
+* If `--overwrite` is set: existing chunk files may be replaced.
 
 ## 2. Red Team Analysis & Risk Mitigation (Failure Modes)
 Before executing on the tech stack, we proactively "Red Teamed" the spec to find architectural vulnerabilities, edge cases, and catastrophic failure modes:

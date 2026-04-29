@@ -1,3 +1,4 @@
+import { mkdir, stat } from 'node:fs/promises';
 import { basename } from 'node:path';
 import { DiscordJsonAdapter } from '../adapters/discord/DiscordJsonAdapter';
 import { FacebookMessengerJsonAdapter } from '../adapters/fb_messenger/FacebookMessengerJsonAdapter';
@@ -28,7 +29,10 @@ import {
 } from '../core/scrubMessages';
 import { writeUnifiedExportCsv } from '../core/writeUnifiedExportCsv';
 import { writeUnifiedExportJson } from '../core/writeUnifiedExportJson';
+import { writeUnifiedExportJsonChunked } from '../core/writeUnifiedExportJsonChunked';
 import { writeUnifiedExportMarkdown } from '../core/writeUnifiedExportMarkdown';
+import { writeUnifiedExportMarkdownChunked } from '../core/writeUnifiedExportMarkdownChunked';
+import type { ChunkBy } from '../core/chunking';
 import type { IUnifiedMessage } from '../types';
 import { ChatType, Platform } from '../types';
 import YAML from 'yaml';
@@ -40,6 +44,8 @@ type Args = {
   input?: string;
   output?: string;
   outputFormat?: string;
+  chunkBy?: string;
+  overwrite?: boolean;
   platform?: string;
   chatName?: string;
   chatType?: string;
@@ -90,6 +96,10 @@ function parseArgs(argv: string[]): Args {
         args.outputFormat = value;
         if (consumedNext) i++;
         break;
+      case '--chunk-by':
+        args.chunkBy = value;
+        if (consumedNext) i++;
+        break;
       case '--platform':
         args.platform = value;
         if (consumedNext) i++;
@@ -128,6 +138,10 @@ function parseArgs(argv: string[]): Args {
         break;
       case '--anonymize':
         args.anonymize = value == null ? true : value.trim().toLowerCase() !== 'false';
+        if (consumedNext) i++;
+        break;
+      case '--overwrite':
+        args.overwrite = value == null ? true : value.trim().toLowerCase() !== 'false';
         if (consumedNext) i++;
         break;
       case '--since-utc':
@@ -173,6 +187,35 @@ function normalizeOutputFormat(raw?: string): OutputFormat {
   return 'json';
 }
 
+function normalizeChunkBy(raw?: string): 'none' | ChunkBy {
+  if (!raw) return 'none';
+  const key = raw.trim().toLowerCase();
+  if (key === 'none') return 'none';
+  if (key === 'day' || key === 'month') return key;
+  return 'none';
+}
+
+async function ensureDir(path: string): Promise<void> {
+  try {
+    const s = await stat(path);
+    if (!s.isDirectory()) throw new Error(`Output path exists and is not a directory: ${path}`);
+  } catch (err) {
+    const code = getNodeErrorCode(err);
+    if (code === 'ENOENT') {
+      await mkdir(path, { recursive: true });
+      return;
+    }
+    throw err;
+  }
+}
+
+function getNodeErrorCode(err: unknown): string | undefined {
+  if (!err || typeof err !== 'object') return undefined;
+  if (!('code' in err)) return undefined;
+  const code = (err as { code?: unknown }).code;
+  return typeof code === 'string' ? code : undefined;
+}
+
 async function loadIdentitiesYaml(filePath: string): Promise<IdentitiesFile> {
   const file = Bun.file(filePath);
   const exists = await file.exists();
@@ -194,6 +237,8 @@ function usage(): string {
     '  --platform <PLATFORM>      e.g. WHATSAPP, DISCORD, TELEGRAM, SLACK, IMESSAGE, META_CONVERSATIONS_API',
     '  --output <path>            Write output to a file (default: stdout)',
     '  --output-format <fmt>      json|md|csv (default: json)',
+    '  --chunk-by <mode>          none|day|month (default: none; requires --output as a directory)',
+    '  --overwrite                Allow replacing existing output files (chunking mode)',
     '  --chat-name <name>         Overrides chat_info.chat_name (default: derived from input filename)',
     '  --chat-type <type>         DIRECT|GROUP|CHANNEL (default: GROUP)',
     '  --participant-count <n>    Optional participant count',
@@ -257,6 +302,7 @@ async function main(): Promise<void> {
   const platform = normalizePlatform(args.platform);
   const chatType = normalizeChatType(args.chatType);
   const outputFormat = normalizeOutputFormat(args.outputFormat);
+  const chunkBy = normalizeChunkBy(args.chunkBy);
 
   let metaApiConfig: MetaConversationsApiConfig | undefined;
 
@@ -386,6 +432,42 @@ async function main(): Promise<void> {
     chat_type: chatType,
     participant_count: participantCount,
   };
+
+  if (chunkBy !== 'none') {
+    if (!args.output || args.output.trim() === '' || args.output === '-') {
+      process.stderr.write(`Chunking mode requires --output <dir> (stdout is not supported)\n\n${usage()}\n`);
+      process.exitCode = 2;
+      return;
+    }
+    if (outputFormat === 'csv') {
+      process.stderr.write(`Chunking is not supported for --output-format csv\n`);
+      process.exitCode = 2;
+      return;
+    }
+
+    await ensureDir(args.output);
+
+    if (outputFormat === 'md') {
+      await writeUnifiedExportMarkdownChunked({
+        exportMeta,
+        chatInfo,
+        messages,
+        outputDir: args.output,
+        chunkBy,
+        overwrite: args.overwrite,
+      });
+    } else {
+      await writeUnifiedExportJsonChunked({
+        exportMeta,
+        chatInfo,
+        messages,
+        outputDir: args.output,
+        chunkBy,
+        overwrite: args.overwrite,
+      });
+    }
+    return;
+  }
 
   if (outputFormat === 'md') {
     await writeUnifiedExportMarkdown({ exportMeta, chatInfo, messages, outputPath: args.output });

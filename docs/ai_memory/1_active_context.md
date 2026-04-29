@@ -49,10 +49,12 @@ We now have end-to-end conversion with streaming adapters and smoke tests for:
 - **Meta API Adapter Contract (Draft):** If implemented, the Meta Conversations API adapter must take secrets via env vars (draft: `META_ACCESS_TOKEN`, optional `META_GRAPH_API_VERSION`) and accept a non-secret JSON config via `--input` containing only IDs/selection parameters.
 - **Meta API Adapter Testing:** Smoke tests run in a zero-network fixture mode via `META_API_FIXTURE_DIR` so no real tokens or exports are required in CI.
 - **Next Phase (Scrubbing + Outputs):** Implement a streaming scrub pipeline (identity resolution + optional anonymization + filters) and add Markdown/CSV writers behind `--output-format`.
+- **Phase 20 (Output Chunking):** Chosen contract is **directory-mode** output when chunking is enabled. Filenames use a non-PII stable identifier: `<platform>.<chatId>.chunk.<chunkKey>.<ext>` where `chatId` is a short prefix of `sha256(platform + "\n" + chat_type + "\n" + chat_name)`. Collision policy is fail-fast by default, with `--overwrite` to replace existing chunk files.
 
 ## Current Status
 - Phase 19 (Scrubbing + Markdown/CSV outputs) is implemented and covered by smoke tests.
 - Phase 17 (WhatsApp reply-aware imports via DB) is implemented for iOS `ChatStorage.sqlite` and covered by a synthetic smoke test.
+- Phase 20 (Output chunking) is implemented for `json` and `md` via `--chunk-by` (directory-mode output), with fail-fast collision behavior by default and `--overwrite` available.
 
 ## Next Focus
 - V1 scope is planned through Phase 22 (no additional mobile adapters in this version).

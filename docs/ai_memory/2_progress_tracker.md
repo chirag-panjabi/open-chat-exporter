@@ -96,10 +96,10 @@
 - [x] **Task 19.7:** Add synthetic fixtures + smoke tests proving scrub + MD/CSV output works end-to-end without loading exports into memory.
 
 ## Phase 20: Output Chunking (Time / Token Budget)
-- [ ] **Task 20.1:** Define CLI contract for chunking large exports into multiple files (time-based, and optionally token/size-based).
-- [ ] **Task 20.2:** Implement time-based chunking for `md` and `json` outputs without buffering `messages[]` in memory.
-- [ ] **Task 20.3:** (Optional) Implement token/size-budget chunking (best-effort) and document any approximation limits.
-- [ ] **Task 20.4:** Add synthetic fixture + smoke test proving chunked outputs are deterministic and ordered.
+- [x] **Task 20.1:** Define and document the CLI contract for time-based chunking using **directory-mode** output.
+- [x] **Task 20.2:** Implement time-based chunking for `md` and `json` outputs (streaming-safe, no buffering `messages[]`), using filename scheme: `<platform>.<chatId>.chunk.<chunkKey>.<ext>`.
+- [x] **Task 20.3:** Implement collision policy: fail-fast by default; add `--overwrite` to allow replacing existing chunk files.
+- [x] **Task 20.4:** Add synthetic fixture + smoke tests proving: deterministic chunk boundaries, ordering preserved, and overwrite/collision behavior.
 
 ## Phase 21: Incremental Export + Deduplication
 - [ ] **Task 21.1:** Define CLI contract for incremental runs (dedup against an existing unified export) in a streaming-safe way.
