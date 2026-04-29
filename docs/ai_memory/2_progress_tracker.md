@@ -73,9 +73,9 @@
 
 ## Phase 17: Adapter (WhatsApp - Reply-Aware via DB/Backups)
 - [x] **Task 17.1:** Document the limitations of WhatsApp `.txt` exports for reply/quote mapping and define the DB-first approach (iOS backup / decrypted DB) to populate `context.reply_to_message_id`.
-- [ ] **Task 17.2:** Add a WhatsApp iOS DB adapter that reads an extracted WhatsApp chat database file from a decrypted iOS backup (user provides the extracted DB path).
-- [ ] **Task 17.3:** Implement a streaming-safe reply resolution strategy (two-pass with on-disk key→`message_id` lookup, or best-effort bounded cache).
-- [ ] **Task 17.4:** Add synthetic fixtures + smoke test proving reply-to mapping works end-to-end without committing real exports.
+- [x] **Task 17.2:** Add a WhatsApp iOS DB adapter that reads an extracted WhatsApp chat database file from a decrypted iOS backup (user provides the extracted DB path).
+- [x] **Task 17.3:** Implement a streaming-safe reply resolution strategy (two-pass with on-disk key→`message_id` lookup, or best-effort bounded cache).
+- [x] **Task 17.4:** Add synthetic fixtures + smoke test proving reply-to mapping works end-to-end without committing real exports.
 - [x] **Task 17.5:** Update spec/docs to reflect the reply-aware WhatsApp import path (inspired by iMazing’s backup-based extraction workflow).
 
 ## Phase 18: Adapter (Meta Conversations API - Reply-Aware, Optional)

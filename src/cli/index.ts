@@ -11,6 +11,7 @@ import { SnapchatJsonAdapter } from '../adapters/snapchat/SnapchatJsonAdapter';
 import { SlackJsonAdapter } from '../adapters/slack/SlackJsonAdapter';
 import { TelegramJsonAdapter } from '../adapters/telegram/TelegramJsonAdapter';
 import { WhatsAppTxtAdapter } from '../adapters/whatsapp/WhatsAppTxtAdapter';
+import { WhatsAppIosChatStorageDbAdapter } from '../adapters/whatsapp/WhatsAppIosChatStorageDbAdapter';
 import { XTwitterDirectMessagesJsAdapter } from '../adapters/x_twitter/XTwitterDirectMessagesJsAdapter';
 import { IMessageChatDbAdapter } from '../adapters/imessage/IMessageChatDbAdapter';
 import {
@@ -45,6 +46,8 @@ type Args = {
   participantCount?: string;
   chatGuid?: string;
   myName?: string;
+  waChatJid?: string;
+  waChatPk?: string;
   identities?: string;
   anonymize?: boolean;
   sinceUtc?: string;
@@ -109,6 +112,14 @@ function parseArgs(argv: string[]): Args {
         break;
       case '--my-name':
         args.myName = value;
+        if (consumedNext) i++;
+        break;
+      case '--wa-chat-jid':
+        args.waChatJid = value;
+        if (consumedNext) i++;
+        break;
+      case '--wa-chat-pk':
+        args.waChatPk = value;
         if (consumedNext) i++;
         break;
       case '--identities':
@@ -194,6 +205,8 @@ function usage(): string {
     '  --min-content-length <n>   Drop messages with trimmed content shorter than n',
     '  --chat-guid <guid>         (IMESSAGE) chat.guid to export (required)',
     '  --my-name <name>           (IMESSAGE) display name for your outgoing messages (default: Me)',
+    '  --wa-chat-jid <jid>        (WHATSAPP ChatStorage.sqlite) select chat by ZWACHATSESSION.ZCONTACTJID',
+    '  --wa-chat-pk <pk>          (WHATSAPP ChatStorage.sqlite) select chat by ZWACHATSESSION.Z_PK',
     '',
     'Meta Conversations API notes:',
     '  - Requires META_ACCESS_TOKEN (except when using META_API_FIXTURE_DIR for tests)',
@@ -201,6 +214,17 @@ function usage(): string {
     '',
     'Note: Not all adapters are implemented yet. Use --platform UNKNOWN to test the pipeline.',
   ].join('\n');
+}
+
+async function sniffSqliteHeader(file: ReturnType<typeof Bun.file>): Promise<boolean> {
+  // Read a tiny prefix only; safe for huge files.
+  const prefix = await file.slice(0, 16).arrayBuffer();
+  const bytes = new Uint8Array(prefix);
+  const magic = 'SQLite format 3\u0000';
+  for (let i = 0; i < magic.length; i++) {
+    if (bytes[i] !== magic.charCodeAt(i)) return false;
+  }
+  return true;
 }
 
 async function main(): Promise<void> {
@@ -260,6 +284,8 @@ async function main(): Promise<void> {
     stream: file.stream(),
   };
 
+  const isWhatsAppSqlite = platform === Platform.WHATSAPP ? await sniffSqliteHeader(file) : false;
+
   const adapter =
     platform === Platform.DISCORD
       ? new DiscordJsonAdapter()
@@ -288,7 +314,13 @@ async function main(): Promise<void> {
                             : platform === Platform.META_CONVERSATIONS_API
                               ? new MetaConversationsApiAdapter({ config: metaApiConfig! })
                               : platform === Platform.WHATSAPP
-                                ? new WhatsAppTxtAdapter()
+                                ? isWhatsAppSqlite
+                                  ? new WhatsAppIosChatStorageDbAdapter({
+                                      chatJid: args.waChatJid,
+                                      chatPk: args.waChatPk,
+                                      myName: args.myName,
+                                    })
+                                  : new WhatsAppTxtAdapter()
                                 : platform === Platform.UNKNOWN
                                   ? new NoopAdapter()
                                   : null;

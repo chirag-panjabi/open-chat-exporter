@@ -1,5 +1,5 @@
 # Active Context for AI Agents
-**Last Updated:** April 22, 2026
+**Last Updated:** April 30, 2026
 
 ## Project Identity
 **Unified Chat Exporter (V1: TypeScript)**
@@ -10,6 +10,7 @@ Phase 1 (scaffolding), Phase 2 (types contract), and Phase 3 (CLI + streaming co
 We now have end-to-end conversion with streaming adapters and smoke tests for:
 - Discord JSON (`DISCORD`)
 - WhatsApp TXT (`WHATSAPP`)
+- WhatsApp iOS `ChatStorage.sqlite` (`WHATSAPP`)
 - Telegram JSON (`TELEGRAM`)
 - Slack JSON (`SLACK`)
 - iMessage macOS Messages `chat.db` (`IMESSAGE`)
@@ -51,4 +52,4 @@ We now have end-to-end conversion with streaming adapters and smoke tests for:
 
 ## Current Status
 - Phase 19 (Scrubbing + Markdown/CSV outputs) is implemented and covered by smoke tests.
-- Next focus per roadmap: Phase 17 (WhatsApp reply-aware imports via DB) remaining tasks 17.2–17.4.
+- Phase 17 (WhatsApp reply-aware imports via DB) is implemented for iOS `ChatStorage.sqlite` and covered by a synthetic smoke test.
