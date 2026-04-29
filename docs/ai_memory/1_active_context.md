@@ -53,3 +53,8 @@ We now have end-to-end conversion with streaming adapters and smoke tests for:
 ## Current Status
 - Phase 19 (Scrubbing + Markdown/CSV outputs) is implemented and covered by smoke tests.
 - Phase 17 (WhatsApp reply-aware imports via DB) is implemented for iOS `ChatStorage.sqlite` and covered by a synthetic smoke test.
+
+## Next Focus
+- Output chunking (split large exports by time / token budget) and incremental deduplication.
+- WhatsApp Android decrypted DB adapter (reply-aware).
+- Additional mobile adapters (Signal, WeChat, Line, KakaoTalk, Viber).

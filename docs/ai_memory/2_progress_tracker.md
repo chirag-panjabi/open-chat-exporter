@@ -94,3 +94,26 @@
 - [x] **Task 19.5:** Add Markdown writer (`--output-format md`) with a stable, minimal format.
 - [x] **Task 19.6:** Add CSV writer (`--output-format csv`) with correct escaping and a stable header.
 - [x] **Task 19.7:** Add synthetic fixtures + smoke tests proving scrub + MD/CSV output works end-to-end without loading exports into memory.
+
+## Phase 20: Output Chunking (Time / Token Budget)
+- [ ] **Task 20.1:** Define CLI contract for chunking large exports into multiple files (time-based, and optionally token/size-based).
+- [ ] **Task 20.2:** Implement time-based chunking for `md` and `json` outputs without buffering `messages[]` in memory.
+- [ ] **Task 20.3:** (Optional) Implement token/size-budget chunking (best-effort) and document any approximation limits.
+- [ ] **Task 20.4:** Add synthetic fixture + smoke test proving chunked outputs are deterministic and ordered.
+
+## Phase 21: Incremental Export + Deduplication
+- [ ] **Task 21.1:** Define CLI contract for incremental runs (dedup against an existing unified export) in a streaming-safe way.
+- [ ] **Task 21.2:** Implement streaming-safe dedup (prefer on-disk index like SQLite; avoid in-memory sets for huge histories).
+- [ ] **Task 21.3:** Add synthetic fixture + smoke test proving dedup drops previously-seen `message_id`s.
+
+## Phase 22: Adapter (WhatsApp - Android DB, Reply-Aware)
+- [ ] **Task 22.1:** Document required inputs and constraints (decrypted Android DBs; key extraction remains out-of-scope for this repo).
+- [ ] **Task 22.2:** Implement Android WhatsApp DB adapter with reply mapping into `context.reply_to_message_id` (streaming-first).
+- [ ] **Task 22.3:** Add synthetic fixtures + smoke test for Android DB reply mapping.
+
+## Phase 23: Adapters (Additional Mobile Ecosystem)
+- [ ] **Task 23.1:** Implement Signal decrypted backup adapter (user provides passphrase-derived decrypted artifact).
+- [ ] **Task 23.2:** Implement WeChat exported DB adapter.
+- [ ] **Task 23.3:** Implement Line `.txt` adapter.
+- [ ] **Task 23.4:** Implement KakaoTalk export adapter.
+- [ ] **Task 23.5:** Implement Viber export adapter.
