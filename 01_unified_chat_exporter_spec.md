@@ -9,6 +9,8 @@ As a dedicated open-source project, we can learn from and reference existing com
 
 **Goal:** Allow users to export a WhatsApp `.txt` file, a Discord `.json` dump, or an iMessage SQLite export, scrub it for privacy, and output a clean unified format (JSON, Markdown, CSV).
 
+**V1 Scope (Roadmap):** Implement through Phase 22 (chunking, incremental dedup, and WhatsApp Android DB reply-aware import). Additional mobile ecosystem adapters (Signal/WeChat/Line/KakaoTalk/Viber) are deferred to a later version.
+
 ## 1. Technical Architecture: The Pipeline
 
 ### A. The Input Adapters (Parsers)

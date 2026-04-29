@@ -111,9 +111,8 @@
 - [ ] **Task 22.2:** Implement Android WhatsApp DB adapter with reply mapping into `context.reply_to_message_id` (streaming-first).
 - [ ] **Task 22.3:** Add synthetic fixtures + smoke test for Android DB reply mapping.
 
-## Phase 23: Adapters (Additional Mobile Ecosystem)
-- [ ] **Task 23.1:** Implement Signal decrypted backup adapter (user provides passphrase-derived decrypted artifact).
-- [ ] **Task 23.2:** Implement WeChat exported DB adapter.
-- [ ] **Task 23.3:** Implement Line `.txt` adapter.
-- [ ] **Task 23.4:** Implement KakaoTalk export adapter.
-- [ ] **Task 23.5:** Implement Viber export adapter.
+## Release Readiness (V1)
+- [ ] **Task R1:** Decide packaging approach (Bun compile/single binary vs source-only) and document supported install/run paths.
+- [ ] **Task R2:** Add a minimal README with: supported inputs per platform, example commands, and safety notes (no PII in repo; media excluded).
+- [ ] **Task R3:** Add a "large export" guide: streaming constraints, expected memory profile, and recommended chunking/dedup workflows.
+- [ ] **Task R4:** Add a release checklist (version bump, `bun run typecheck/lint/test`, `git status`, fixture-only tests).
