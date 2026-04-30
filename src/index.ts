@@ -13,4 +13,7 @@ export * from './core/writeUnifiedExportCsv';
 export * from './core/writeUnifiedMessagesJsonArray';
 export * from './core/writeUnifiedMessagesJsonArrayChunked';
 
+export * from './core/writeUnifiedMessagesMinimalJsonArray';
+export * from './core/writeUnifiedMessagesMinimalJsonArrayChunked';
+
 export * from './sdk';

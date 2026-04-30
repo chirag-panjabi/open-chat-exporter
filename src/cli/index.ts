@@ -34,6 +34,8 @@ import { writeUnifiedExportJson } from '../core/writeUnifiedExportJson';
 import { writeUnifiedExportJsonChunked } from '../core/writeUnifiedExportJsonChunked';
 import { writeUnifiedMessagesJsonArray } from '../core/writeUnifiedMessagesJsonArray';
 import { writeUnifiedMessagesJsonArrayChunked } from '../core/writeUnifiedMessagesJsonArrayChunked';
+import { writeUnifiedMessagesMinimalJsonArray } from '../core/writeUnifiedMessagesMinimalJsonArray';
+import { writeUnifiedMessagesMinimalJsonArrayChunked } from '../core/writeUnifiedMessagesMinimalJsonArrayChunked';
 import { writeUnifiedExportMarkdown } from '../core/writeUnifiedExportMarkdown';
 import { writeUnifiedExportMarkdownChunked } from '../core/writeUnifiedExportMarkdownChunked';
 import type { ChunkBy } from '../core/chunking';
@@ -43,7 +45,7 @@ import { ChatType, Platform } from '../types';
 import YAML from 'yaml';
 
 type OutputFormat = 'json' | 'md' | 'csv';
-type OutputProfile = 'canonical' | 'messages-array';
+type OutputProfile = 'canonical' | 'messages-array' | 'minimal';
 
 type Args = {
   command?: string;
@@ -218,6 +220,7 @@ function normalizeOutputProfile(raw?: string): OutputProfile {
   const key = raw.trim().toLowerCase();
   if (key === 'canonical') return 'canonical';
   if (key === 'messages-array' || key === 'messages_array' || key === 'messages') return 'messages-array';
+  if (key === 'minimal' || key === 'minimal-v1' || key === 'sovereign-minimal') return 'minimal';
   return 'canonical';
 }
 
@@ -271,7 +274,7 @@ function usage(): string {
     '  --platform <PLATFORM>      e.g. WHATSAPP, DISCORD, TELEGRAM, SLACK, IMESSAGE, META_CONVERSATIONS_API',
     '  --output <path>            Write output to a file (default: stdout)',
     '  --output-format <fmt>      json|md|csv (default: json)',
-    '  --output-profile <profile> canonical|messages-array (default: canonical; JSON only)',
+    '  --output-profile <profile> canonical|messages-array|minimal (default: canonical; JSON only)',
     '  --dedup-against <path>     Drop messages whose message_id exists in a prior unified JSON export (file or directory of *.json)',
     '  --chunk-by <mode>          none|day|month (default: none; requires --output as a directory)',
     '  --overwrite                Allow replacing existing output files (chunking mode)',
@@ -576,8 +579,16 @@ async function main(): Promise<void> {
             chunkBy,
             overwrite: args.overwrite,
           });
-        } else {
+        } else if (outputProfile === 'messages-array') {
           await writeUnifiedMessagesJsonArrayChunked({
+            chatInfo,
+            messages: countedMessages,
+            outputDir: args.output,
+            chunkBy,
+            overwrite: args.overwrite,
+          });
+        } else {
+          await writeUnifiedMessagesMinimalJsonArrayChunked({
             chatInfo,
             messages: countedMessages,
             outputDir: args.output,
@@ -602,8 +613,14 @@ async function main(): Promise<void> {
     } else {
       if (outputProfile === 'canonical') {
         await writeUnifiedExportJson({ exportMeta, chatInfo, messages: countedMessages, outputPath: args.output });
-      } else {
+      } else if (outputProfile === 'messages-array') {
         await writeUnifiedMessagesJsonArray({ messages: countedMessages, outputPath: args.output });
+      } else {
+        await writeUnifiedMessagesMinimalJsonArray({
+          platform: String(chatInfo.platform),
+          messages: countedMessages,
+          outputPath: args.output,
+        });
       }
     }
 
