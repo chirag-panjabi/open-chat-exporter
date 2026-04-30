@@ -118,6 +118,6 @@
 - [ ] **Task R4:** Add a release checklist (version bump, `bun run typecheck/lint/test`, `git status`, fixture-only tests).
 - [x] **Task R5:** Support SDK/dependency usage (stable programmatic API + package exports) so other products can embed parsing/normalization without shelling out to the CLI.
 - [x] **Task R6:** Add output profiles for strict downstream schemas (e.g., a minimal JSON array profile) without changing the canonical unified wrapper schema.
-- [ ] **Task R7:** Improve reliability + integration controls: lenient parse mode (warn/skip), structured reporting (`--report-json`), and logging controls (`--quiet`, machine-readable logs).
-	- Implemented: `--report-json`, `--quiet`
-	- Remaining: define/implement `--lenient` behavior and decide a machine-readable log format (if needed beyond the report file)
+- [x] **Task R7:** Improve reliability + integration controls: lenient parse mode (warn/skip), structured reporting (`--report-json`), and logging controls (`--quiet`, machine-readable logs).
+	- Implemented: `--report-json`, `--quiet`, `--lenient` baseline (WhatsApp TXT: warn + treat invalid header-like lines as continuation)
+	- Remaining: extend lenient behavior to more adapters where feasible; decide whether per-warning machine-readable logs are needed beyond the report JSON

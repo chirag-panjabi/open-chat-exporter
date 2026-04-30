@@ -59,9 +59,10 @@ We now have end-to-end conversion with streaming adapters and smoke tests for:
 - Phase 22 (WhatsApp Android reply-aware DB) is implemented for decrypted msgstore-style SQLite (`messages` table) and covered by a synthetic smoke test.
 - Phase 20 (Output chunking) is implemented for `json` and `md` via `--chunk-by` (directory-mode output), with fail-fast collision behavior by default and `--overwrite` available.
 - Phase 21 (Incremental dedup) is implemented via `--dedup-against <file|dir>` (streaming-safe on-disk index; drops already-seen `message_id`s).
+- Release readiness: structured run reporting is supported via `--report-json`, and best-effort parsing is supported for WhatsApp TXT via `--lenient` (warnings are aggregated and included in the report).
 
 ## Next Focus
 - V1 core scope is implemented through Phase 22.
 - Release readiness: packaging/distribution + README/docs (streaming-safe, no-PII).
 - Integration ergonomics for host apps (e.g., Sovereign): output profiles (minimal JSON array), SDK/dependency entrypoint, and structured reporting/logging.
-- Next: define `--lenient` behavior (warn/skip policy) and decide if we need machine-readable logs beyond `--report-json`.
+- Next: extend `--lenient` warn/skip behavior beyond WhatsApp TXT (where feasible), and decide if we need machine-readable per-warning logs beyond `--report-json`.

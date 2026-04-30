@@ -46,9 +46,27 @@ function toUtcIsoFromLocalWallClock(parts: {
     minute: number;
     second: number;
 }): string {
+    if (parts.month < 1 || parts.month > 12) throw new Error('Invalid date/time in WhatsApp TXT export');
+    if (parts.day < 1 || parts.day > 31) throw new Error('Invalid date/time in WhatsApp TXT export');
+    if (parts.hour < 0 || parts.hour > 23) throw new Error('Invalid date/time in WhatsApp TXT export');
+    if (parts.minute < 0 || parts.minute > 59) throw new Error('Invalid date/time in WhatsApp TXT export');
+    if (parts.second < 0 || parts.second > 59) throw new Error('Invalid date/time in WhatsApp TXT export');
+
+    // Stronger day-of-month validation (avoid JS Date rollover for invalid days like Feb 31).
+    const maxDay = new Date(parts.year, parts.month, 0).getDate();
+    if (parts.day > maxDay) throw new Error('Invalid date/time in WhatsApp TXT export');
+
     const date = new Date(parts.year, parts.month - 1, parts.day, parts.hour, parts.minute, parts.second);
     if (Number.isNaN(date.getTime())) throw new Error('Invalid date/time in WhatsApp TXT export');
     return date.toISOString();
+}
+
+function warn(input: AdapterInput, warning: { code: string; message: string }): void {
+    try {
+        input.onWarning?.(warning);
+    } catch {
+        // ignore
+    }
 }
 
 function parseHeaderLine(line: string, dateOrder: DateOrder): ParsedHeader | null {
@@ -229,11 +247,29 @@ export class WhatsAppTxtAdapter extends BaseAdapter {
 
             const header = parseHeaderLine(line, dateOrder);
             if (header) {
+                let timestampUtc: string;
+                try {
+                    timestampUtc = toUtcIsoFromLocalWallClock(header);
+                } catch {
+                    if (input.lenient) {
+                        warn(input, {
+                            code: 'WA_TXT_INVALID_HEADER_DATETIME',
+                            message: 'Invalid WhatsApp TXT timestamp header; treating line as continuation',
+                        });
+
+                        if (current) {
+                            current.content = current.content.length ? `${current.content}\n${line}` : line;
+                        }
+
+                        continue;
+                    }
+                    throw new Error('Invalid date/time in WhatsApp TXT export');
+                }
+
                 if (current) {
                     yield toUnifiedMessage(current);
                 }
 
-                const timestampUtc = toUtcIsoFromLocalWallClock(header);
                 const { senderName, content, isSystem } = parseSenderAndContent(header.rest);
                 const flags = analyzeContentFlags(content);
 

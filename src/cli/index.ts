@@ -55,6 +55,7 @@ type Args = {
   outputProfile?: string;
   reportJson?: string;
   quiet?: boolean;
+  lenient?: boolean;
   chunkBy?: string;
   overwrite?: boolean;
   dedupAgainst?: string;
@@ -126,6 +127,10 @@ function parseArgs(argv: string[]): Args {
         break;
       case '--quiet':
         args.quiet = value == null ? true : value.trim().toLowerCase() !== 'false';
+        if (consumedNext) i++;
+        break;
+      case '--lenient':
+        args.lenient = value == null ? true : value.trim().toLowerCase() !== 'false';
         if (consumedNext) i++;
         break;
       case '--platform':
@@ -280,6 +285,7 @@ function usage(): string {
     '  --overwrite                Allow replacing existing output files (chunking mode)',
     '  --report-json <path>       Write a small JSON run report (messages emitted, dedup stats, timings)',
     '  --quiet                    Suppress non-error stderr output (e.g., dedup summary)',
+    '  --lenient                  Best-effort parsing: warn/skip when feasible instead of crashing',
     '  --chat-name <name>         Overrides chat_info.chat_name (default: derived from input filename)',
     '  --chat-type <type>         DIRECT|GROUP|CHANNEL (default: GROUP)',
     '  --participant-count <n>    Optional participant count',
@@ -389,6 +395,17 @@ async function main(): Promise<void> {
     inputPath: args.input,
     file,
     stream: file.stream(),
+  };
+
+  let warningsCount = 0;
+  const warningCountsByCode: Record<string, number> = {};
+  input.lenient = Boolean(args.lenient);
+  input.onWarning = (warning) => {
+    warningsCount++;
+    warningCountsByCode[warning.code] = (warningCountsByCode[warning.code] ?? 0) + 1;
+    if (!args.quiet) {
+      process.stderr.write(`WARN ${warning.code}: ${warning.message}\n`);
+    }
   };
 
   const isWhatsAppSqlite = platform === Platform.WHATSAPP ? await sniffSqliteHeader(file) : false;
@@ -642,7 +659,12 @@ async function main(): Promise<void> {
       output_profile: outputProfile,
       chunk_by: chunkBy,
       overwrite: Boolean(args.overwrite),
+      lenient: Boolean(args.lenient),
       messages_emitted: messagesEmitted,
+      warnings: {
+        count: warningsCount,
+        by_code: warningCountsByCode,
+      },
       dedup: dedupStats ? dedupStats : undefined,
       error: errorMessage,
     };

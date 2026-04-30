@@ -145,12 +145,17 @@ export async function createAdapterAsync(params: CreateAdapterParams): Promise<B
   }
 }
 
-export function openAdapterInput(inputPath: string): AdapterInput {
+export function openAdapterInput(
+  inputPath: string,
+  opts?: { lenient?: boolean; onWarning?: AdapterInput['onWarning'] }
+): AdapterInput {
   const file = Bun.file(inputPath);
   return {
     inputPath,
     file,
     stream: file.stream(),
+    lenient: opts?.lenient,
+    onWarning: opts?.onWarning,
   };
 }
 
