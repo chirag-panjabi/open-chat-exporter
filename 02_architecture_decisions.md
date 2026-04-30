@@ -77,3 +77,8 @@ Below is the chronological log of architecture and design decisions made for the
 **Date:** April 22, 2026
 **Decision:** Implement scrubbing (identity resolution + optional anonymization + filters) as a streaming transform *after* adapters and *before* output writers. Add Markdown and CSV output formats behind a single `--output-format` flag.
 **Reason:** Scrubbing needs to be applied uniformly across platforms, and output formatting must not require buffering `messages[]` in memory.
+
+### Decision 16: Dual-Use Packaging (CLI + Embeddable SDK)
+**Date:** April 30, 2026
+**Decision:** Treat this repo as both (1) a CLI tool and (2) a reusable dependency/SDK that other products can embed to parse/normalize chat exports without re-implementing adapters.
+**Reason:** Many products will have their own UI (e.g., drag-and-drop upload) but want a battle-tested, streaming-safe normalization core. A stable programmatic API plus publishable package exports enables that.
