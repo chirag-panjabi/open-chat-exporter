@@ -63,4 +63,5 @@ We now have end-to-end conversion with streaming adapters and smoke tests for:
 ## Next Focus
 - V1 core scope is implemented through Phase 22.
 - Release readiness: packaging/distribution + README/docs (streaming-safe, no-PII).
-- Integration ergonomics for host apps (e.g., Sovereign): output profiles (minimal JSON array), lenient parsing mode, and structured reporting/logging.
+- Integration ergonomics for host apps (e.g., Sovereign): output profiles (minimal JSON array), SDK/dependency entrypoint, and structured reporting/logging.
+- Next: define `--lenient` behavior (warn/skip policy) and decide if we need machine-readable logs beyond `--report-json`.

@@ -32,6 +32,8 @@ import {
 import { writeUnifiedExportCsv } from '../core/writeUnifiedExportCsv';
 import { writeUnifiedExportJson } from '../core/writeUnifiedExportJson';
 import { writeUnifiedExportJsonChunked } from '../core/writeUnifiedExportJsonChunked';
+import { writeUnifiedMessagesJsonArray } from '../core/writeUnifiedMessagesJsonArray';
+import { writeUnifiedMessagesJsonArrayChunked } from '../core/writeUnifiedMessagesJsonArrayChunked';
 import { writeUnifiedExportMarkdown } from '../core/writeUnifiedExportMarkdown';
 import { writeUnifiedExportMarkdownChunked } from '../core/writeUnifiedExportMarkdownChunked';
 import type { ChunkBy } from '../core/chunking';
@@ -41,12 +43,16 @@ import { ChatType, Platform } from '../types';
 import YAML from 'yaml';
 
 type OutputFormat = 'json' | 'md' | 'csv';
+type OutputProfile = 'canonical' | 'messages-array';
 
 type Args = {
   command?: string;
   input?: string;
   output?: string;
   outputFormat?: string;
+  outputProfile?: string;
+  reportJson?: string;
+  quiet?: boolean;
   chunkBy?: string;
   overwrite?: boolean;
   dedupAgainst?: string;
@@ -100,12 +106,24 @@ function parseArgs(argv: string[]): Args {
         args.outputFormat = value;
         if (consumedNext) i++;
         break;
+      case '--output-profile':
+        args.outputProfile = value;
+        if (consumedNext) i++;
+        break;
       case '--dedup-against':
         args.dedupAgainst = value;
         if (consumedNext) i++;
         break;
       case '--chunk-by':
         args.chunkBy = value;
+        if (consumedNext) i++;
+        break;
+      case '--report-json':
+        args.reportJson = value;
+        if (consumedNext) i++;
+        break;
+      case '--quiet':
+        args.quiet = value == null ? true : value.trim().toLowerCase() !== 'false';
         if (consumedNext) i++;
         break;
       case '--platform':
@@ -195,6 +213,14 @@ function normalizeOutputFormat(raw?: string): OutputFormat {
   return 'json';
 }
 
+function normalizeOutputProfile(raw?: string): OutputProfile {
+  if (!raw) return 'canonical';
+  const key = raw.trim().toLowerCase();
+  if (key === 'canonical') return 'canonical';
+  if (key === 'messages-array' || key === 'messages_array' || key === 'messages') return 'messages-array';
+  return 'canonical';
+}
+
 function normalizeChunkBy(raw?: string): 'none' | ChunkBy {
   if (!raw) return 'none';
   const key = raw.trim().toLowerCase();
@@ -245,9 +271,12 @@ function usage(): string {
     '  --platform <PLATFORM>      e.g. WHATSAPP, DISCORD, TELEGRAM, SLACK, IMESSAGE, META_CONVERSATIONS_API',
     '  --output <path>            Write output to a file (default: stdout)',
     '  --output-format <fmt>      json|md|csv (default: json)',
+    '  --output-profile <profile> canonical|messages-array (default: canonical; JSON only)',
     '  --dedup-against <path>     Drop messages whose message_id exists in a prior unified JSON export (file or directory of *.json)',
     '  --chunk-by <mode>          none|day|month (default: none; requires --output as a directory)',
     '  --overwrite                Allow replacing existing output files (chunking mode)',
+    '  --report-json <path>       Write a small JSON run report (messages emitted, dedup stats, timings)',
+    '  --quiet                    Suppress non-error stderr output (e.g., dedup summary)',
     '  --chat-name <name>         Overrides chat_info.chat_name (default: derived from input filename)',
     '  --chat-type <type>         DIRECT|GROUP|CHANNEL (default: GROUP)',
     '  --participant-count <n>    Optional participant count',
@@ -324,7 +353,14 @@ async function main(): Promise<void> {
   const platform = normalizePlatform(args.platform);
   const chatType = normalizeChatType(args.chatType);
   const outputFormat = normalizeOutputFormat(args.outputFormat);
+  const outputProfile = normalizeOutputProfile(args.outputProfile);
   const chunkBy = normalizeChunkBy(args.chunkBy);
+
+  if (outputProfile !== 'canonical' && outputFormat !== 'json') {
+    process.stderr.write(`--output-profile ${outputProfile} is only supported for --output-format json\n`);
+    process.exitCode = 2;
+    return;
+  }
 
   let metaApiConfig: MetaConversationsApiConfig | undefined;
 
@@ -494,6 +530,18 @@ async function main(): Promise<void> {
     participant_count: participantCount,
   };
 
+  const startedAt = Date.now();
+  let messagesEmitted = 0;
+  const countedMessages: AsyncIterable<IUnifiedMessage> = (async function* () {
+    for await (const m of messages) {
+      messagesEmitted++;
+      yield m;
+    }
+  })();
+
+  let success = false;
+  let errorMessage: string | undefined;
+
   try {
     if (chunkBy !== 'none') {
       if (!args.output || args.output.trim() === '' || args.output === '-') {
@@ -513,34 +561,85 @@ async function main(): Promise<void> {
         await writeUnifiedExportMarkdownChunked({
           exportMeta,
           chatInfo,
-          messages,
+          messages: countedMessages,
           outputDir: args.output,
           chunkBy,
           overwrite: args.overwrite,
         });
       } else {
-        await writeUnifiedExportJsonChunked({
-          exportMeta,
-          chatInfo,
-          messages,
-          outputDir: args.output,
-          chunkBy,
-          overwrite: args.overwrite,
-        });
+        if (outputProfile === 'canonical') {
+          await writeUnifiedExportJsonChunked({
+            exportMeta,
+            chatInfo,
+            messages: countedMessages,
+            outputDir: args.output,
+            chunkBy,
+            overwrite: args.overwrite,
+          });
+        } else {
+          await writeUnifiedMessagesJsonArrayChunked({
+            chatInfo,
+            messages: countedMessages,
+            outputDir: args.output,
+            chunkBy,
+            overwrite: args.overwrite,
+          });
+        }
       }
+      success = true;
       return;
     }
 
     if (outputFormat === 'md') {
-      await writeUnifiedExportMarkdown({ exportMeta, chatInfo, messages, outputPath: args.output });
+      await writeUnifiedExportMarkdown({
+        exportMeta,
+        chatInfo,
+        messages: countedMessages,
+        outputPath: args.output,
+      });
     } else if (outputFormat === 'csv') {
-      await writeUnifiedExportCsv({ exportMeta, chatInfo, messages, outputPath: args.output });
+      await writeUnifiedExportCsv({ exportMeta, chatInfo, messages: countedMessages, outputPath: args.output });
     } else {
-      await writeUnifiedExportJson({ exportMeta, chatInfo, messages, outputPath: args.output });
+      if (outputProfile === 'canonical') {
+        await writeUnifiedExportJson({ exportMeta, chatInfo, messages: countedMessages, outputPath: args.output });
+      } else {
+        await writeUnifiedMessagesJsonArray({ messages: countedMessages, outputPath: args.output });
+      }
     }
+
+    success = true;
+  } catch (err) {
+    errorMessage = err instanceof Error ? (err.stack ?? err.message) : String(err);
+    throw err;
   } finally {
+    const finishedAt = Date.now();
+    const report = {
+      success,
+      started_at: new Date(startedAt).toISOString(),
+      finished_at: new Date(finishedAt).toISOString(),
+      duration_ms: finishedAt - startedAt,
+      platform: String(platform),
+      input: args.input,
+      output: args.output,
+      output_format: outputFormat,
+      output_profile: outputProfile,
+      chunk_by: chunkBy,
+      overwrite: Boolean(args.overwrite),
+      messages_emitted: messagesEmitted,
+      dedup: dedupStats ? dedupStats : undefined,
+      error: errorMessage,
+    };
+
     if (closeDedup) closeDedup();
-    if (dedupStats) process.stderr.write(`${formatDedupStats(dedupStats)}\n`);
+    if (!args.quiet && dedupStats) process.stderr.write(`${formatDedupStats(dedupStats)}\n`);
+
+    if (args.reportJson && args.reportJson.trim() !== '') {
+      try {
+        await Bun.write(args.reportJson, JSON.stringify(report, null, 2) + '\n');
+      } catch {
+        // ignore report-writing errors (do not mask primary errors)
+      }
+    }
   }
 }
 

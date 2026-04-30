@@ -158,8 +158,13 @@ This phase adds a streaming scrub step (identity resolution + optional anonymiza
 
 **CLI additions (contract):**
 * `--output-format <fmt>` where `<fmt>` is `json | md | csv` (default: `json`).
+* `--output-profile <profile>` where `<profile>` is `canonical | messages-array` (default: `canonical`).
+	* `canonical` emits the authoritative wrapper schema from `03_unified_schema_definition.md`.
+	* `messages-array` emits a root JSON array of message objects for strict downstream validators.
 * `--identities <path>` path to `identities.yaml` (see `03_unified_schema_definition.md`).
 * `--anonymize` when set, replaces alias occurrences in `content` with `sender.resolved_name` (best-effort).
+* `--report-json <path>` writes a small machine-readable run report (messages emitted, dedup stats, timings).
+* `--quiet` suppresses non-error stderr output (e.g., dedup summary).
 * Optional streaming-safe filters:
 	* `--since-utc <iso>` / `--until-utc <iso>`
 	* `--drop-system` (omit `metadata.is_system === true`)
