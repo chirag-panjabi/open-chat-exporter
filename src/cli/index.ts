@@ -1,3 +1,4 @@
+import { Database } from 'bun:sqlite';
 import { mkdir, stat } from 'node:fs/promises';
 import { basename } from 'node:path';
 import { DiscordJsonAdapter } from '../adapters/discord/DiscordJsonAdapter';
@@ -11,6 +12,7 @@ import { SkypeMessagesJsonAdapter } from '../adapters/skype/SkypeMessagesJsonAda
 import { SnapchatJsonAdapter } from '../adapters/snapchat/SnapchatJsonAdapter';
 import { SlackJsonAdapter } from '../adapters/slack/SlackJsonAdapter';
 import { TelegramJsonAdapter } from '../adapters/telegram/TelegramJsonAdapter';
+import { WhatsAppAndroidMsgstoreDbAdapter } from '../adapters/whatsapp/WhatsAppAndroidMsgstoreDbAdapter';
 import { WhatsAppTxtAdapter } from '../adapters/whatsapp/WhatsAppTxtAdapter';
 import { WhatsAppIosChatStorageDbAdapter } from '../adapters/whatsapp/WhatsAppIosChatStorageDbAdapter';
 import { XTwitterDirectMessagesJsAdapter } from '../adapters/x_twitter/XTwitterDirectMessagesJsAdapter';
@@ -257,8 +259,8 @@ function usage(): string {
     '  --min-content-length <n>   Drop messages with trimmed content shorter than n',
     '  --chat-guid <guid>         (IMESSAGE) chat.guid to export (required)',
     '  --my-name <name>           (IMESSAGE) display name for your outgoing messages (default: Me)',
-    '  --wa-chat-jid <jid>        (WHATSAPP ChatStorage.sqlite) select chat by ZWACHATSESSION.ZCONTACTJID',
-    '  --wa-chat-pk <pk>          (WHATSAPP ChatStorage.sqlite) select chat by ZWACHATSESSION.Z_PK',
+    '  --wa-chat-jid <jid>        (WHATSAPP SQLite) select chat by JID (iOS ChatStorage.sqlite or Android msgstore.db)',
+    '  --wa-chat-pk <pk>          (WHATSAPP iOS ChatStorage.sqlite) select chat by ZWACHATSESSION.Z_PK',
     '',
     'Meta Conversations API notes:',
     '  - Requires META_ACCESS_TOKEN (except when using META_API_FIXTURE_DIR for tests)',
@@ -266,6 +268,19 @@ function usage(): string {
     '',
     'Note: Not all adapters are implemented yet. Use --platform UNKNOWN to test the pipeline.',
   ].join('\n');
+}
+
+function hasSqliteTable(db: Database, table: string): boolean {
+  const row = db
+    .query("SELECT name FROM sqlite_master WHERE type='table' AND name = ?1 LIMIT 1")
+    .get(table) as { name?: string } | null;
+  return Boolean(row?.name);
+}
+
+function sniffWhatsAppSqliteKind(db: Database): 'ios' | 'android' | 'unknown' {
+  if (hasSqliteTable(db, 'ZWAMESSAGE') && hasSqliteTable(db, 'ZWACHATSESSION')) return 'ios';
+  if (hasSqliteTable(db, 'messages')) return 'android';
+  return 'unknown';
 }
 
 async function sniffSqliteHeader(file: ReturnType<typeof Bun.file>): Promise<boolean> {
@@ -339,6 +354,29 @@ async function main(): Promise<void> {
 
   const isWhatsAppSqlite = platform === Platform.WHATSAPP ? await sniffSqliteHeader(file) : false;
 
+  let whatsAppSqliteKind: 'ios' | 'android' | 'unknown' = 'unknown';
+  if (platform === Platform.WHATSAPP && isWhatsAppSqlite) {
+    const db = new Database(args.input, { readonly: true });
+    try {
+      whatsAppSqliteKind = sniffWhatsAppSqliteKind(db);
+    } finally {
+      try {
+        db.close();
+      } catch {
+        // ignore
+      }
+    }
+
+    if (whatsAppSqliteKind === 'unknown') {
+      process.stderr.write(
+        'Unsupported WHATSAPP SQLite schema. Expected iOS ChatStorage.sqlite (ZWAMESSAGE/ZWACHATSESSION) ' +
+        "or Android msgstore.db (messages table).\n"
+      );
+      process.exitCode = 3;
+      return;
+    }
+  }
+
   const adapter =
     platform === Platform.DISCORD
       ? new DiscordJsonAdapter()
@@ -368,11 +406,16 @@ async function main(): Promise<void> {
                               ? new MetaConversationsApiAdapter({ config: metaApiConfig! })
                               : platform === Platform.WHATSAPP
                                 ? isWhatsAppSqlite
-                                  ? new WhatsAppIosChatStorageDbAdapter({
-                                    chatJid: args.waChatJid,
-                                    chatPk: args.waChatPk,
-                                    myName: args.myName,
-                                  })
+                                  ? whatsAppSqliteKind === 'ios'
+                                    ? new WhatsAppIosChatStorageDbAdapter({
+                                      chatJid: args.waChatJid,
+                                      chatPk: args.waChatPk,
+                                      myName: args.myName,
+                                    })
+                                    : new WhatsAppAndroidMsgstoreDbAdapter({
+                                      chatJid: args.waChatJid,
+                                      myName: args.myName,
+                                    })
                                   : new WhatsAppTxtAdapter()
                                 : platform === Platform.UNKNOWN
                                   ? new NoopAdapter()

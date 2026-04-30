@@ -55,6 +55,7 @@ We now have end-to-end conversion with streaming adapters and smoke tests for:
 ## Current Status
 - Phase 19 (Scrubbing + Markdown/CSV outputs) is implemented and covered by smoke tests.
 - Phase 17 (WhatsApp reply-aware imports via DB) is implemented for iOS `ChatStorage.sqlite` and covered by a synthetic smoke test.
+- Phase 22 (WhatsApp Android reply-aware DB) is implemented for decrypted msgstore-style SQLite (`messages` table) and covered by a synthetic smoke test.
 - Phase 20 (Output chunking) is implemented for `json` and `md` via `--chunk-by` (directory-mode output), with fail-fast collision behavior by default and `--overwrite` available.
 - Phase 21 (Incremental dedup) is implemented via `--dedup-against <file|dir>` (streaming-safe on-disk index; drops already-seen `message_id`s).
 

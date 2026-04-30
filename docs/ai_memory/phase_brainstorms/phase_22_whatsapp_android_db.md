@@ -22,16 +22,17 @@ Parse a user-supplied, already-decrypted WhatsApp Android database to recover re
 - Safety: fixtures only; never store real DBs/keys.
 
 ## CLI Contract
-- Candidate contract (to finalize):
-  - `--platform WHATSAPP` + DB sniffing chooses iOS vs Android adapters
-  - Android may require selecting a chat (jid or chat id) like iOS does
+- Implemented contract:
+  - `--platform WHATSAPP` + SQLite sniffing chooses iOS (`ChatStorage.sqlite`) vs Android (msgstore-style `messages` table).
+  - Select chat via `--wa-chat-jid <jid>` (Android uses `messages.key_remote_jid`).
+  - `--wa-chat-pk` remains iOS-only.
 
 ## Data Model / Schema Touchpoints
 - `context.reply_to_message_id` is the key output difference vs `.txt`.
 
 ## Approach (High Level)
 - Introspect Android schema at runtime (table/column presence) to handle drift.
-- Implement reply mapping via direct foreign keys when available; otherwise use a two-pass on-disk index (similar to iOS stanza strategy).
+- Implement reply mapping via direct foreign key when available (`messages.quoted_row_id` or `messages.quoted_message_row_id` → `messages._id`).
 
 ## Edge Cases
 - Group chats vs direct chats: selecting the right conversation/table join.

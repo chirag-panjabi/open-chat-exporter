@@ -107,9 +107,9 @@
 - [x] **Task 21.3:** Add synthetic fixture + smoke test proving dedup drops previously-seen `message_id`s.
 
 ## Phase 22: Adapter (WhatsApp - Android DB, Reply-Aware)
-- [ ] **Task 22.1:** Document required inputs and constraints (decrypted Android DBs; key extraction remains out-of-scope for this repo).
-- [ ] **Task 22.2:** Implement Android WhatsApp DB adapter with reply mapping into `context.reply_to_message_id` (streaming-first).
-- [ ] **Task 22.3:** Add synthetic fixtures + smoke test for Android DB reply mapping.
+- [x] **Task 22.1:** Document required inputs and constraints (decrypted Android DBs; key extraction remains out-of-scope for this repo).
+- [x] **Task 22.2:** Implement Android WhatsApp DB adapter with reply mapping into `context.reply_to_message_id` (streaming-first).
+- [x] **Task 22.3:** Add synthetic fixtures + smoke test for Android DB reply mapping.
 
 ## Release Readiness (V1)
 - [ ] **Task R1:** Decide packaging approach (Bun compile/single binary vs source-only) and document supported install/run paths.
