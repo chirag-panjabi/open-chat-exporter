@@ -102,9 +102,9 @@
 - [x] **Task 20.4:** Add synthetic fixture + smoke tests proving: deterministic chunk boundaries, ordering preserved, and overwrite/collision behavior.
 
 ## Phase 21: Incremental Export + Deduplication
-- [ ] **Task 21.1:** Define CLI contract for incremental runs (dedup against an existing unified export) in a streaming-safe way.
-- [ ] **Task 21.2:** Implement streaming-safe dedup (prefer on-disk index like SQLite; avoid in-memory sets for huge histories).
-- [ ] **Task 21.3:** Add synthetic fixture + smoke test proving dedup drops previously-seen `message_id`s.
+- [x] **Task 21.1:** Define CLI contract for incremental runs (dedup against an existing unified export) in a streaming-safe way.
+- [x] **Task 21.2:** Implement streaming-safe dedup (prefer on-disk index like SQLite; avoid in-memory sets for huge histories).
+- [x] **Task 21.3:** Add synthetic fixture + smoke test proving dedup drops previously-seen `message_id`s.
 
 ## Phase 22: Adapter (WhatsApp - Android DB, Reply-Aware)
 - [ ] **Task 22.1:** Document required inputs and constraints (decrypted Android DBs; key extraction remains out-of-scope for this repo).

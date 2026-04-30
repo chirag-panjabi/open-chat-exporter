@@ -135,6 +135,17 @@ Give the user local, absolute command over the data before it's finalized.
 *   **Time-Boxing:** Select specific date ranges for export.
 *   **Deduplication (Incremental Exports):** By hashing existing `message_id`s, users can run `chat-export convert --since last_run` to only ingest net-new messages without duplicating vector DB entries.
 
+#### Phase 21 (Planned): Incremental Export + Deduplication
+This phase adds streaming-safe deduplication to support repeated runs without duplicating messages.
+
+**CLI additions (contract):**
+* `--dedup-against <path>`
+	* `<path>` may be a unified export JSON file, or a directory containing `*.json` unified export files (e.g., Phase 20 chunk outputs).
+	* Dedup is performed on `message_id` only.
+	* The exporter produces a **delta export** (net-new messages only); it does not append/merge into the prior export.
+
+**Streaming constraint:** indexing prior exports must be streaming-safe (no buffering `messages[]`).
+
 ### D. The Output Formats & Chunking
 The final payload can be downloaded in formats highly optimized for AI workflows, with built-in awareness of LLM context limits:
 *   **Automated Context Chunking (Phase 20):** Huge chat histories can be sliced by time boundaries (day/month) into multiple files so they don't break LLM context limits when copy-pasted. Token-count chunking is deferred until we can define it deterministically and streaming-safe.

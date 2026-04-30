@@ -33,6 +33,7 @@ import { writeUnifiedExportJsonChunked } from '../core/writeUnifiedExportJsonChu
 import { writeUnifiedExportMarkdown } from '../core/writeUnifiedExportMarkdown';
 import { writeUnifiedExportMarkdownChunked } from '../core/writeUnifiedExportMarkdownChunked';
 import type { ChunkBy } from '../core/chunking';
+import { createDedupFilter, formatDedupStats, type DedupStats } from '../core/dedupAgainst';
 import type { IUnifiedMessage } from '../types';
 import { ChatType, Platform } from '../types';
 import YAML from 'yaml';
@@ -46,6 +47,7 @@ type Args = {
   outputFormat?: string;
   chunkBy?: string;
   overwrite?: boolean;
+  dedupAgainst?: string;
   platform?: string;
   chatName?: string;
   chatType?: string;
@@ -94,6 +96,10 @@ function parseArgs(argv: string[]): Args {
         break;
       case '--output-format':
         args.outputFormat = value;
+        if (consumedNext) i++;
+        break;
+      case '--dedup-against':
+        args.dedupAgainst = value;
         if (consumedNext) i++;
         break;
       case '--chunk-by':
@@ -237,6 +243,7 @@ function usage(): string {
     '  --platform <PLATFORM>      e.g. WHATSAPP, DISCORD, TELEGRAM, SLACK, IMESSAGE, META_CONVERSATIONS_API',
     '  --output <path>            Write output to a file (default: stdout)',
     '  --output-format <fmt>      json|md|csv (default: json)',
+    '  --dedup-against <path>     Drop messages whose message_id exists in a prior unified JSON export (file or directory of *.json)',
     '  --chunk-by <mode>          none|day|month (default: none; requires --output as a directory)',
     '  --overwrite                Allow replacing existing output files (chunking mode)',
     '  --chat-name <name>         Overrides chat_info.chat_name (default: derived from input filename)',
@@ -409,6 +416,17 @@ async function main(): Promise<void> {
   };
 
   let messages: AsyncIterable<IUnifiedMessage> = adapter.parseMessages(input);
+
+  let dedupStats: DedupStats | undefined;
+  let closeDedup: (() => void) | undefined;
+
+  if (args.dedupAgainst) {
+    const dedup = await createDedupFilter({ dedupAgainstPath: args.dedupAgainst });
+    dedupStats = dedup.stats;
+    closeDedup = dedup.close;
+    messages = dedup.filter(messages);
+  }
+
   if (
     scrubOpts.identities ||
     scrubOpts.anonymize ||
@@ -433,48 +451,53 @@ async function main(): Promise<void> {
     participant_count: participantCount,
   };
 
-  if (chunkBy !== 'none') {
-    if (!args.output || args.output.trim() === '' || args.output === '-') {
-      process.stderr.write(`Chunking mode requires --output <dir> (stdout is not supported)\n\n${usage()}\n`);
-      process.exitCode = 2;
-      return;
-    }
-    if (outputFormat === 'csv') {
-      process.stderr.write(`Chunking is not supported for --output-format csv\n`);
-      process.exitCode = 2;
-      return;
-    }
+  try {
+    if (chunkBy !== 'none') {
+      if (!args.output || args.output.trim() === '' || args.output === '-') {
+        process.stderr.write(`Chunking mode requires --output <dir> (stdout is not supported)\n\n${usage()}\n`);
+        process.exitCode = 2;
+        return;
+      }
+      if (outputFormat === 'csv') {
+        process.stderr.write(`Chunking is not supported for --output-format csv\n`);
+        process.exitCode = 2;
+        return;
+      }
 
-    await ensureDir(args.output);
+      await ensureDir(args.output);
+
+      if (outputFormat === 'md') {
+        await writeUnifiedExportMarkdownChunked({
+          exportMeta,
+          chatInfo,
+          messages,
+          outputDir: args.output,
+          chunkBy,
+          overwrite: args.overwrite,
+        });
+      } else {
+        await writeUnifiedExportJsonChunked({
+          exportMeta,
+          chatInfo,
+          messages,
+          outputDir: args.output,
+          chunkBy,
+          overwrite: args.overwrite,
+        });
+      }
+      return;
+    }
 
     if (outputFormat === 'md') {
-      await writeUnifiedExportMarkdownChunked({
-        exportMeta,
-        chatInfo,
-        messages,
-        outputDir: args.output,
-        chunkBy,
-        overwrite: args.overwrite,
-      });
+      await writeUnifiedExportMarkdown({ exportMeta, chatInfo, messages, outputPath: args.output });
+    } else if (outputFormat === 'csv') {
+      await writeUnifiedExportCsv({ exportMeta, chatInfo, messages, outputPath: args.output });
     } else {
-      await writeUnifiedExportJsonChunked({
-        exportMeta,
-        chatInfo,
-        messages,
-        outputDir: args.output,
-        chunkBy,
-        overwrite: args.overwrite,
-      });
+      await writeUnifiedExportJson({ exportMeta, chatInfo, messages, outputPath: args.output });
     }
-    return;
-  }
-
-  if (outputFormat === 'md') {
-    await writeUnifiedExportMarkdown({ exportMeta, chatInfo, messages, outputPath: args.output });
-  } else if (outputFormat === 'csv') {
-    await writeUnifiedExportCsv({ exportMeta, chatInfo, messages, outputPath: args.output });
-  } else {
-    await writeUnifiedExportJson({ exportMeta, chatInfo, messages, outputPath: args.output });
+  } finally {
+    if (closeDedup) closeDedup();
+    if (dedupStats) process.stderr.write(`${formatDedupStats(dedupStats)}\n`);
   }
 }
 
