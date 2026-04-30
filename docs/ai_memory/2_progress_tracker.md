@@ -117,3 +117,5 @@
 - [ ] **Task R3:** Add a "large export" guide: streaming constraints, expected memory profile, and recommended chunking/dedup workflows.
 - [ ] **Task R4:** Add a release checklist (version bump, `bun run typecheck/lint/test`, `git status`, fixture-only tests).
 - [ ] **Task R5:** Support SDK/dependency usage (stable programmatic API + package exports) so other products can embed parsing/normalization without shelling out to the CLI.
+- [ ] **Task R6:** Add output profiles for strict downstream schemas (e.g., a minimal JSON array profile) without changing the canonical unified wrapper schema.
+- [ ] **Task R7:** Improve reliability + integration controls: lenient parse mode (warn/skip), structured reporting (`--report-json`), and logging controls (`--quiet`, machine-readable logs).

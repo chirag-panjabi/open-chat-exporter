@@ -59,14 +59,14 @@ In practice, the best V1 adapters target artifacts that a **regular user** can o
 **Device/ecosystem dependent:**
 * iMessage is most accessible via macOS Messages `chat.db` on a Mac with Messages enabled; iOS backups/device extraction flows are significantly more complex.
 
-### WhatsApp Reply Context (Future Plan)
+### WhatsApp Reply Context (TXT Limitation + DB Import Paths)
 The baseline WhatsApp adapter targets the user-exportable `.txt` file, but that format does **not** reliably preserve reply/quote relationships. This means we often cannot populate `context.reply_to_message_id` from `.txt` alone.
 
 **Inspiration (iMazing):** iMazing’s WhatsApp export workflow is built around pulling WhatsApp data from an iTunes/iMazing iOS backup (including encrypted backups), then exporting in multiple formats (PDF/CSV/TXT/RSMF) with rich metadata. For our purposes, the key takeaway is: **the reply graph is only recoverable when you ingest WhatsApp’s underlying databases**, not the UI-oriented `.txt` export.
 
-**Planned approach for reply-aware WhatsApp imports:**
+**Approach for reply-aware WhatsApp imports:**
 * **iOS backup path (Implemented):** an adapter reads an extracted WhatsApp iOS chat database (`ChatStorage.sqlite`) from a decrypted iOS backup (user supplies the extracted DB file path). It uses the database’s quote/reply reference fields to map each message to its replied-to message and set `context.reply_to_message_id` (best-effort).
-* **Android DB path:** add a parallel adapter for decrypted WhatsApp databases (e.g., `msgstore.db` or equivalent decrypted form). Same goal: map quote/reply references to `context.reply_to_message_id`.
+* **Android DB path (Implemented):** an adapter reads a decrypted msgstore-style SQLite database (e.g., `msgstore.db` or equivalent decrypted form). Same goal: map quote/reply references to `context.reply_to_message_id`.
 * **Streaming-safe resolution:** if reply references use internal keys/row IDs, resolve them via:
 	* a **two-pass** strategy that builds an on-disk lookup (SQLite temp table or KV file) from internal message key → unified `message_id`, then replays messages to fill `reply_to_message_id`, or
 	* a **single-pass** strategy with a bounded cache (best-effort; unresolved replies become `null`).
@@ -135,7 +135,7 @@ Give the user local, absolute command over the data before it's finalized.
 *   **Time-Boxing:** Select specific date ranges for export.
 *   **Deduplication (Incremental Exports):** By hashing existing `message_id`s, users can run `chat-export convert --since last_run` to only ingest net-new messages without duplicating vector DB entries.
 
-#### Phase 21 (Planned): Incremental Export + Deduplication
+#### Phase 21 (Implemented): Incremental Export + Deduplication
 This phase adds streaming-safe deduplication to support repeated runs without duplicating messages.
 
 **CLI additions (contract):**
@@ -172,7 +172,7 @@ This phase adds a streaming scrub step (identity resolution + optional anonymiza
 
 **Non-negotiable constraint:** scrub + writers must operate on an `AsyncGenerator` stream; never buffer `messages[]` in memory.
 
-#### Phase 20 (Planned): Output Chunking (Time-Based)
+#### Phase 20 (Implemented): Output Chunking (Time-Based)
 This phase adds **time-based chunking** for `json` and `md` outputs without buffering `messages[]`.
 
 **CLI additions (contract):**

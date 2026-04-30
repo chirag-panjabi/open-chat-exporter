@@ -4,13 +4,14 @@
 ## Project Identity
 **Unified Chat Exporter (V1: TypeScript)**
 
-## Current Phase: Adapters (Streaming-first)
-Phase 1 (scaffolding), Phase 2 (types contract), and Phase 3 (CLI + streaming core) are complete.
+## Current Phase: Release Readiness (V1)
+Core functionality through Phase 22 is implemented; current work is packaging, documentation, and integration ergonomics.
 
 We now have end-to-end conversion with streaming adapters and smoke tests for:
 - Discord JSON (`DISCORD`)
 - WhatsApp TXT (`WHATSAPP`)
 - WhatsApp iOS `ChatStorage.sqlite` (`WHATSAPP`)
+- WhatsApp Android decrypted msgstore-style SQLite (`WHATSAPP`)
 - Telegram JSON (`TELEGRAM`)
 - Slack JSON (`SLACK`)
 - iMessage macOS Messages `chat.db` (`IMESSAGE`)
@@ -60,8 +61,6 @@ We now have end-to-end conversion with streaming adapters and smoke tests for:
 - Phase 21 (Incremental dedup) is implemented via `--dedup-against <file|dir>` (streaming-safe on-disk index; drops already-seen `message_id`s).
 
 ## Next Focus
-- V1 scope is planned through Phase 22 (no additional mobile adapters in this version).
-- Phase 20: Output chunking (split large exports by time / token budget).
-- Phase 21: Incremental export + deduplication.
-- Phase 22: WhatsApp Android decrypted DB adapter (reply-aware).
-- Release readiness: packaging/distribution + README polish (streaming-safe, no-PII).
+- V1 core scope is implemented through Phase 22.
+- Release readiness: packaging/distribution + README/docs (streaming-safe, no-PII).
+- Integration ergonomics for host apps (e.g., Sovereign): output profiles (minimal JSON array), lenient parsing mode, and structured reporting/logging.

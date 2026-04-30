@@ -82,3 +82,8 @@ Below is the chronological log of architecture and design decisions made for the
 **Date:** April 30, 2026
 **Decision:** Treat this repo as both (1) a CLI tool and (2) a reusable dependency/SDK that other products can embed to parse/normalize chat exports without re-implementing adapters.
 **Reason:** Many products will have their own UI (e.g., drag-and-drop upload) but want a battle-tested, streaming-safe normalization core. A stable programmatic API plus publishable package exports enables that.
+
+### Decision 17: Output Profiles for Strict Consumers (Without Changing Canonical Schema)
+**Date:** April 30, 2026
+**Decision:** Keep `03_unified_schema_definition.md` and the wrapper export (`export_meta`, `chat_info`, `messages[]`) as the canonical output, but allow optional "output profiles" that emit alternate shapes (e.g., a minimal JSON array) for strict downstream integrations.
+**Reason:** Some host apps/LLM pipelines require a minimal schema for strict validation. Output profiles provide compatibility without degrading the unified schema contract.
