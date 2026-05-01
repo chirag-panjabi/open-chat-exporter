@@ -113,7 +113,7 @@
 
 ## Release Readiness (V1)
 - [ ] **Task R1:** Decide packaging approach (Bun compile/single binary vs source-only) and document supported install/run paths.
-- [ ] **Task R2:** Add a minimal README with: supported inputs per platform, example commands, and safety notes (no PII in repo; media excluded).
+- [x] **Task R2:** Add a minimal README with: supported inputs per platform, example commands, and safety notes (no PII in repo; media excluded).
 - [ ] **Task R3:** Add a "large export" guide: streaming constraints, expected memory profile, and recommended chunking/dedup workflows.
 - [ ] **Task R4:** Add a release checklist (version bump, `bun run typecheck/lint/test`, `git status`, fixture-only tests).
 - [x] **Task R5:** Support SDK/dependency usage (stable programmatic API + package exports) so other products can embed parsing/normalization without shelling out to the CLI.
