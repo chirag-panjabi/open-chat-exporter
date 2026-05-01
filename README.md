@@ -53,6 +53,10 @@ Schema source of truth: [03_unified_schema_definition.md](03_unified_schema_defi
 - `--report-json <path>`: writes a small JSON run report (includes warning counts)
 - `--quiet`: suppress non-error stderr output
 
+## Large Exports
+
+Recommended chunking + dedup workflows: [docs/LARGE_EXPORT_GUIDE.md](docs/LARGE_EXPORT_GUIDE.md)
+
 ## Safety (Open Source)
 
 This project handles highly sensitive personal data.
