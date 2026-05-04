@@ -69,7 +69,7 @@ async function readMessages(filePath: string): Promise<Record<string, unknown>[]
 
 async function main(): Promise<void> {
     const fixturePath = 'tests/fixtures/discord/discord_chat_exporter.sample.json';
-    const outputPath = join(tmpdir(), `unified-chat-exporter.discord.${Date.now()}.json`);
+    const outputPath = join(tmpdir(), `open-chat-exporter.discord.${Date.now()}.json`);
 
     const proc = Bun.spawn(
         [

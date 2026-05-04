@@ -1,4 +1,4 @@
-# Unified Chat Exporter Schema Definitions (v1.0-alpha)
+# Open Chat Exporter Schema Definitions (v1.0-alpha)
 
 To determine the most efficient JSON structure, we examined the native API payloads for Discord, Slack, and the open-source Matrix Protocol.
 The problem with native APIs (like Discord's) is that they contain hundreds of irrelevant fields (`embeds`, `author.avatar`, `mentions`, `flags`, `nonce`), creating massive token bloat for LLMs.

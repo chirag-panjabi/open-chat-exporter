@@ -32,7 +32,7 @@ function platformTag(): string {
 async function main(): Promise<void> {
     const args = parseArgs(process.argv.slice(2));
     const outdir = typeof args.outdir === 'string' ? args.outdir : 'dist';
-    const name = typeof args.name === 'string' ? args.name : 'unified-chat-exporter';
+    const name = typeof args.name === 'string' ? args.name : 'open-chat-exporter';
 
     await mkdir(outdir, { recursive: true });
 

@@ -69,7 +69,7 @@ async function readMessages(filePath: string): Promise<Record<string, unknown>[]
 
 async function main(): Promise<void> {
   const fixturePath = 'tests/fixtures/goog_chat/goog_chat.sample.json';
-  const outputPath = join(tmpdir(), `unified-chat-exporter.goog_chat.${Date.now()}.json`);
+  const outputPath = join(tmpdir(), `open-chat-exporter.goog_chat.${Date.now()}.json`);
 
   const proc = Bun.spawn(
     [

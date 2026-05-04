@@ -21,7 +21,7 @@ async function listFiles(dir: string): Promise<string[]> {
 }
 
 async function main(): Promise<void> {
-    const outDir = await mkdtemp(join(tmpdir(), 'unified-chat-exporter.chunk.'));
+    const outDir = await mkdtemp(join(tmpdir(), 'open-chat-exporter.chunk.'));
 
     const fixturePath = 'tests/fixtures/discord/discord_chat_exporter.chunking.sample.json';
 
@@ -106,7 +106,7 @@ async function main(): Promise<void> {
     assert(jsonFiles2.length === 2, `Expected 2 JSON chunk files after overwrite, got ${jsonFiles2.length}`);
 
     // Markdown chunking should also work (in a separate directory).
-    const outDirMd = await mkdtemp(join(tmpdir(), 'unified-chat-exporter.chunk-md.'));
+    const outDirMd = await mkdtemp(join(tmpdir(), 'open-chat-exporter.chunk-md.'));
     const exitMd = await runCli([
         'convert',
         '--input',

@@ -1,8 +1,8 @@
 
-# Unified Chat Exporter (Standalone / Sibling Project Spec)
+# Open Chat Exporter (Standalone / Sibling Project Spec)
 
 ## Project Overview
-Before building the Sovereign App (which requires strictly structured data), we are first building the "Unified Chat Exporter." This is a standalone, fully open-source utility designed to solve the universal AI "ingestion problem." It takes raw, messy chat exports from various communication platforms and normalizes them into clean, structured formats suitable for LLMs, RAG pipelines, or direct analysis.
+Before building the Sovereign App (which requires strictly structured data), we are first building the "Open Chat Exporter." This is a standalone, fully open-source utility designed to solve the universal AI "ingestion problem." It takes raw, messy chat exports from various communication platforms and normalizes them into clean, structured formats suitable for LLMs, RAG pipelines, or direct analysis.
 
 **Open Source Strategy (Build vs. Borrow):**
 As a dedicated open-source project, we can learn from and reference existing community tools (like `DiscordChatExporter` in C#, `imessage-exporter` in Rust, or `WhatsApp-Chat-Exporter` in Python). However, to prevent a fragmented architecture requiring multiple language runtimes, we will **borrow the parsing logic/regex/schemas** from these projects, but **build the actual adapters natively** in our chosen unified tech stack. This ensures the exporter remains a fast, lightweight, and easily deployable tool.
@@ -232,7 +232,7 @@ Before executing on the tech stack, we proactively "Red Teamed" the spec to find
 Given the goal of maximum utility—acting as a standalone CLI tool that anyone can use to extract structured data (`.csv`, `.json`, `.md`)—we must select a language that balances developer speed, parsing performance (handling 5GB files), and easy distribution.
 
 **The Strategy: The "JavaScript Trojan Horse"**
-We have decided to build **V1 of the Unified Chat Exporter in TypeScript** (compiled to a standalone executable via **Bun** or **Deno**). Once the project gains traction, we will rewrite the ultra-high-performance parsing core in **Rust** for V2.
+We have decided to build **V1 of the Open Chat Exporter in TypeScript** (compiled to a standalone executable via **Bun** or **Deno**). Once the project gains traction, we will rewrite the ultra-high-performance parsing core in **Rust** for V2.
 
 ### Why TypeScript First?
 1. **Massive Open Source Talent Pool:** TypeScript is the lingua franca of the web. Finding 20 open-source contributors to write parsers for KakaoTalk, Viber, and Snapchat is profoundly easier in TS than in Rust.
@@ -247,4 +247,4 @@ We have decided to build **V1 of the Unified Chat Exporter in TypeScript** (comp
 By choosing TypeScript for V1, we optimize for speed-to-market and community growth. By planning for Rust in V2, we secure the project's long-term enterprise viability.
 
 ## 4. How this bridges to Sovereign
-The output of this Unified Chat Exporter (specifically the JSON format) will become the exact, required input schema for the Sovereign AP Framework App. By decoupling the messy parsing logic from the AI analysis logic, both projects become exponentially easier to build and maintain.
+The output of this Open Chat Exporter (specifically the JSON format) will become the exact, required input schema for the Sovereign AP Framework App. By decoupling the messy parsing logic from the AI analysis logic, both projects become exponentially easier to build and maintain.

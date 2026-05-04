@@ -1,4 +1,4 @@
-# Release Brainstorm — SDK / Dependency Mode (Embed Unified Chat Exporter)
+# Release Brainstorm — SDK / Dependency Mode (Embed Open Chat Exporter)
 
 **Phase:** Release Readiness (R5)
 **Owner:** TBD
@@ -32,7 +32,7 @@ Make this project easy to embed as a dependency in other products (e.g., a drag-
 
 ## Packaging Contract (Proposed)
 - Publish a package that exposes:
-  - `exports` for public API (e.g., `unified-chat-exporter` or `unified-chat-exporter/sdk`).
+  - `exports` for public API (e.g., `open-chat-exporter` or `open-chat-exporter/sdk`).
   - a `bin` entry for CLI use.
 - Build outputs:
   - compile to `dist/` for Node consumers.

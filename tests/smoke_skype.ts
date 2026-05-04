@@ -69,7 +69,7 @@ async function readMessages(filePath: string): Promise<Record<string, unknown>[]
 
 async function main(): Promise<void> {
   const fixturePath = 'tests/fixtures/skype/skype.messages.sample.json';
-  const outputPath = join(tmpdir(), `unified-chat-exporter.skype.${Date.now()}.json`);
+  const outputPath = join(tmpdir(), `open-chat-exporter.skype.${Date.now()}.json`);
 
   const proc = Bun.spawn(
     [

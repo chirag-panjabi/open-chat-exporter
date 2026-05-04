@@ -69,7 +69,7 @@ async function readMessages(filePath: string): Promise<Record<string, unknown>[]
 
 async function main(): Promise<void> {
     const fixturePath = 'tests/fixtures/meta_conversations_api/meta_conversations_api.config.sample.json';
-    const outputPath = join(tmpdir(), `unified-chat-exporter.meta_conversations_api.${Date.now()}.json`);
+    const outputPath = join(tmpdir(), `open-chat-exporter.meta_conversations_api.${Date.now()}.json`);
 
     const proc = Bun.spawn(
         [

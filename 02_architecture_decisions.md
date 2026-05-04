@@ -1,12 +1,12 @@
-# Unified Chat Exporter - Architecture Decisions Log
+# Open Chat Exporter - Architecture Decisions Log
 
-Below is the chronological log of architecture and design decisions made for the Unified Chat Exporter project. It captures the *what* and the *why* of key choices as the project evolves.
+Below is the chronological log of architecture and design decisions made for the Open Chat Exporter project. It captures the *what* and the *why* of key choices as the project evolves.
 
 ---
 
 ### Decision 1: Project Scope - Unified Schema & Goal
 **Date:** April 20, 2026
-**Decision:** Build a standalone, open-source CLI utility ("Unified Chat Exporter") to normalize messy communication exports (WhatsApp, Discord, iMessage, etc.) into clean, structured formats (JSON, Markdown) for LLM ingestion, RAG pipelines, or direct analysis.
+**Decision:** Build a standalone, open-source CLI utility ("Open Chat Exporter") to normalize messy communication exports (WhatsApp, Discord, iMessage, etc.) into clean, structured formats (JSON, Markdown) for LLM ingestion, RAG pipelines, or direct analysis.
 **Reason:** Currently, AI developers have to write custom parsers for every platform or rely on clunky, fragmented data analysis tools that aren't natively designed for AI context windows.
 
 ### Decision 2: Expansive Platform Support

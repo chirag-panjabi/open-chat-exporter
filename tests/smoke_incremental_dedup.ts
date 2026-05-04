@@ -25,7 +25,7 @@ async function readUnifiedJsonMessagesCount(path: string): Promise<number> {
 async function main(): Promise<void> {
     const fixturePath = 'tests/fixtures/discord/discord_chat_exporter.sample.json';
 
-    const outDir = await mkdtemp(join(tmpdir(), 'unified-chat-exporter.dedup.'));
+    const outDir = await mkdtemp(join(tmpdir(), 'open-chat-exporter.dedup.'));
     const baseline = join(outDir, 'baseline.json');
     const delta = join(outDir, 'delta.json');
 

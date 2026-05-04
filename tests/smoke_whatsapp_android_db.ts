@@ -115,8 +115,8 @@ function createSyntheticAndroidMsgstoreSqlite(dbPath: string): void {
 }
 
 async function main(): Promise<void> {
-    const dbPath = join(tmpdir(), `unified-chat-exporter.whatsapp-android.${Date.now()}.msgstore.db`);
-    const outputPath = join(tmpdir(), `unified-chat-exporter.whatsapp-android.${Date.now()}.json`);
+    const dbPath = join(tmpdir(), `open-chat-exporter.whatsapp-android.${Date.now()}.msgstore.db`);
+    const outputPath = join(tmpdir(), `open-chat-exporter.whatsapp-android.${Date.now()}.json`);
 
     createSyntheticAndroidMsgstoreSqlite(dbPath);
 

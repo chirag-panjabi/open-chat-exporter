@@ -47,7 +47,7 @@ async function readProcStderr(proc: Bun.Subprocess): Promise<string> {
 
 async function runSuccessCase(): Promise<void> {
     const fixturePath = 'tests/fixtures/whatsapp/whatsapp_lenient_invalid_timestamp.sample.txt';
-    const outputPath = join(tmpdir(), `unified-chat-exporter.jsonl.${Date.now()}.json`);
+    const outputPath = join(tmpdir(), `open-chat-exporter.jsonl.${Date.now()}.json`);
 
     const proc = Bun.spawn(
         [

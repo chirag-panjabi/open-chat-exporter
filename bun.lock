@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "unified-chat-exporter",
+      "name": "open-chat-exporter",
       "dependencies": {
         "stream-json": "^2.1.0",
         "yaml": "^2.8.3",

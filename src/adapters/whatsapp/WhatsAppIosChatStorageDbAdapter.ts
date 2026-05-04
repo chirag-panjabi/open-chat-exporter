@@ -228,7 +228,7 @@ ORDER BY Z_PK;
                 (quotedStanzaExpr.startsWith('m.') || quotedStanzaExpr.startsWith('mi.'));
 
             if (needsStanzaIndex) {
-                indexPath = join(tmpdir(), `unified-chat-exporter.whatsapp-ios-stanza-index.${Date.now()}.${Math.random().toString(16).slice(2)}.sqlite`);
+                indexPath = join(tmpdir(), `open-chat-exporter.whatsapp-ios-stanza-index.${Date.now()}.${Math.random().toString(16).slice(2)}.sqlite`);
                 indexDb = new Database(indexPath);
                 indexDb.exec('PRAGMA journal_mode=WAL;');
                 indexDb.exec('CREATE TABLE IF NOT EXISTS stanza_to_pk (stanza_id TEXT PRIMARY KEY, pk TEXT NOT NULL);');

@@ -29,10 +29,10 @@ If you are shipping the standalone executable path:
 
 ```bash
 bun run build:exe
-./dist/unified-chat-exporter-<os>-<arch> --help
+./dist/open-chat-exporter-<os>-<arch> --help
 
 # Quick IPC smoke (stderr JSONL events; synthetic fixture only)
-./dist/unified-chat-exporter-<os>-<arch> convert \
+./dist/open-chat-exporter-<os>-<arch> convert \
   --input tests/fixtures/whatsapp/whatsapp_lenient_invalid_timestamp.sample.txt \
   --platform WHATSAPP \
   --output /tmp/out.json \
@@ -45,8 +45,6 @@ bun run build:exe
 
 Notes:
 - JSONL logging contract: [LOG_FORMAT_JSONL.md](LOG_FORMAT_JSONL.md)
-
-Notes:
 - Tests must remain **synthetic-fixture-only** (no real exports).
 - Avoid adding tests that require network access or secrets.
 

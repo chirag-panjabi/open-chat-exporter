@@ -69,7 +69,7 @@ async function readMessages(filePath: string): Promise<Record<string, unknown>[]
 
 async function main(): Promise<void> {
     const fixturePath = 'tests/fixtures/whatsapp/whatsapp_txt.sample.txt';
-    const outputPath = join(tmpdir(), `unified-chat-exporter.whatsapp.${Date.now()}.json`);
+    const outputPath = join(tmpdir(), `open-chat-exporter.whatsapp.${Date.now()}.json`);
 
     const proc = Bun.spawn(
         [

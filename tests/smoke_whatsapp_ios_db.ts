@@ -167,8 +167,8 @@ function createSyntheticChatStorageSqlite(dbPath: string): void {
 }
 
 async function main(): Promise<void> {
-    const dbPath = join(tmpdir(), `unified-chat-exporter.whatsapp-ios.${Date.now()}.ChatStorage.sqlite`);
-    const outputPath = join(tmpdir(), `unified-chat-exporter.whatsapp-ios.${Date.now()}.json`);
+    const dbPath = join(tmpdir(), `open-chat-exporter.whatsapp-ios.${Date.now()}.ChatStorage.sqlite`);
+    const outputPath = join(tmpdir(), `open-chat-exporter.whatsapp-ios.${Date.now()}.json`);
 
     createSyntheticChatStorageSqlite(dbPath);
 

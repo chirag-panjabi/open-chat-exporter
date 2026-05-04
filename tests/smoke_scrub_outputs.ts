@@ -18,8 +18,8 @@ async function main(): Promise<void> {
     const fixturePath = 'tests/fixtures/scrub/discord_for_scrub.sample.json';
     const identitiesPath = 'tests/fixtures/scrub/identities.sample.yaml';
 
-    const mdOut = join(tmpdir(), `unified-chat-exporter.scrub.${Date.now()}.md`);
-    const csvOut = join(tmpdir(), `unified-chat-exporter.scrub.${Date.now()}.csv`);
+    const mdOut = join(tmpdir(), `open-chat-exporter.scrub.${Date.now()}.md`);
+    const csvOut = join(tmpdir(), `open-chat-exporter.scrub.${Date.now()}.csv`);
 
     const exitMd = await runCli([
         'convert',

@@ -1,4 +1,4 @@
-# Unified Chat Exporter (V1)
+# Open Chat Exporter (V1)
 
 Streaming-first conversion of multiple chat export formats into a single unified schema.
 
@@ -40,7 +40,7 @@ bun run build:exe
 2) Run conversions with **structured stderr events** and data written to a file:
 
 ```bash
-./dist/unified-chat-exporter-<os>-<arch> convert \
+./dist/open-chat-exporter-<os>-<arch> convert \
   --input <path> \
   --platform <PLATFORM> \
   --output out.json \
@@ -106,3 +106,7 @@ bun run typecheck
 bun run lint
 bun run test
 ```
+
+## License
+
+Apache-2.0 (see [LICENSE](LICENSE)).

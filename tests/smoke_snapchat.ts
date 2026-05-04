@@ -69,7 +69,7 @@ async function readMessages(filePath: string): Promise<Record<string, unknown>[]
 
 async function main(): Promise<void> {
   const fixturePath = 'tests/fixtures/snapchat/chat_history.sample.json';
-  const outputPath = join(tmpdir(), `unified-chat-exporter.snapchat.${Date.now()}.json`);
+  const outputPath = join(tmpdir(), `open-chat-exporter.snapchat.${Date.now()}.json`);
 
   const proc = Bun.spawn(
     [

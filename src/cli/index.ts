@@ -364,13 +364,13 @@ async function loadIdentitiesYaml(filePath: string): Promise<IdentitiesFile> {
 
 function usage(): string {
   return [
-    'Unified Chat Exporter (WIP)',
+    'Open Chat Exporter (WIP)',
     '',
     'Usage:',
     '  <executable> convert --input <path> --platform <PLATFORM> [--output <path>]',
     '  bun run src/cli/index.ts convert --input <path> --platform <PLATFORM> [--output <path>]',
     '',
-    'Where <executable> is the standalone binary path (e.g., ./dist/unified-chat-exporter-macos-arm64)',
+    'Where <executable> is the standalone binary path (e.g., ./dist/open-chat-exporter-macos-arm64)',
     '',
     'Options:',
     '  --input <path>             Path to an export file (or folder for future adapters)',
@@ -378,7 +378,7 @@ function usage(): string {
     '  --output <path>            Write output to a file (default: stdout)',
     '  --output-format <fmt>      json|md|csv (default: json)',
     '  --output-profile <profile> canonical|messages-array|minimal (default: canonical; JSON only)',
-    '  --dedup-against <path>     Drop messages whose message_id exists in a prior unified JSON export (file or directory of *.json)',
+    '  --dedup-against <path>     Drop messages whose message_id exists in a prior exported JSON (file or directory of *.json)',
     '  --chunk-by <mode>          none|day|month (default: none; requires --output as a directory)',
     '  --overwrite                Allow replacing existing output files (chunking mode)',
     '  --report-json <path>       Write a small JSON run report (messages emitted, dedup stats, timings)',

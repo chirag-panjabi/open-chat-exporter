@@ -1,5 +1,5 @@
 {
-  "name": "unified-chat-exporter",
+  "name": "open-chat-exporter",
   "version": "1.0.0",
   "description": "",
   "main": "./src/index.ts",
@@ -21,7 +21,7 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "Apache-2.0",
   "type": "commonjs",
   "devDependencies": {
     "@eslint/js": "^10.0.1",

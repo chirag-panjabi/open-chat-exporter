@@ -20,11 +20,11 @@ bun run build:exe
 Run:
 
 ```bash
-./dist/unified-chat-exporter-<os>-<arch> --help
-./dist/unified-chat-exporter-<os>-<arch> convert --input <path> --platform <PLATFORM> --output out.json
+./dist/open-chat-exporter-<os>-<arch> --help
+./dist/open-chat-exporter-<os>-<arch> convert --input <path> --platform <PLATFORM> --output out.json
 
 # For host-app IPC integration, emit structured stderr events:
-./dist/unified-chat-exporter-<os>-<arch> convert ... --log-format jsonl 2> run.events.jsonl
+./dist/open-chat-exporter-<os>-<arch> convert ... --log-format jsonl 2> run.events.jsonl
 ```
 
 Notes:
@@ -34,7 +34,7 @@ Build script options:
 
 ```bash
 # Customize output directory/name
-bun run build:exe --outdir dist --name unified-chat-exporter
+bun run build:exe --outdir dist --name open-chat-exporter
 
 # On Windows, optional GUI-friendly build (hides console window)
 bun run build:exe --windows-hide-console
@@ -71,9 +71,9 @@ bun run cli --help
 
 This repo exposes stable entrypoints via `package.json` `exports`:
 
-- `unified-chat-exporter` (core entrypoint)
-- `unified-chat-exporter/sdk` (adapter creation helpers)
-- `unified-chat-exporter/types` (TypeScript types)
+- `open-chat-exporter` (core entrypoint)
+- `open-chat-exporter/sdk` (adapter creation helpers)
+- `open-chat-exporter/types` (TypeScript types)
 
 How you consume it depends on your setup:
 - Within a monorepo/workspace, add it as a workspace dependency.

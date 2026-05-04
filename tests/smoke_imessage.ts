@@ -126,8 +126,8 @@ CREATE TABLE message_attachment_join (
 }
 
 async function main(): Promise<void> {
-    const dbPath = join(tmpdir(), `unified-chat-exporter.imessage.${Date.now()}.chat.db`);
-    const outputPath = join(tmpdir(), `unified-chat-exporter.imessage.${Date.now()}.json`);
+    const dbPath = join(tmpdir(), `open-chat-exporter.imessage.${Date.now()}.chat.db`);
+    const outputPath = join(tmpdir(), `open-chat-exporter.imessage.${Date.now()}.json`);
 
     createSyntheticChatDb(dbPath);
 

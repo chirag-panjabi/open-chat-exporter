@@ -48,7 +48,7 @@ async function readRootArray(filePath: string): Promise<Record<string, unknown>[
 
 async function main(): Promise<void> {
   const fixturePath = 'tests/fixtures/discord/discord_chat_exporter.sample.json';
-  const outputPath = join(tmpdir(), `unified-chat-exporter.profile.messages-array.${Date.now()}.json`);
+  const outputPath = join(tmpdir(), `open-chat-exporter.profile.messages-array.${Date.now()}.json`);
 
   const proc = Bun.spawn(
     [

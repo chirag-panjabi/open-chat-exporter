@@ -1,4 +1,4 @@
-# Copilot Instructions (Unified Chat Exporter)
+# Copilot Instructions (Open Chat Exporter)
 
 ## Source of Truth
 - Treat `03_unified_schema_definition.md` as authoritative for the JSON format.

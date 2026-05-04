@@ -69,7 +69,7 @@ async function readMessages(filePath: string): Promise<Record<string, unknown>[]
 
 async function main(): Promise<void> {
   const fixturePath = 'tests/fixtures/ms_teams/ms_teams.sample.json';
-  const outputPath = join(tmpdir(), `unified-chat-exporter.ms_teams.${Date.now()}.json`);
+  const outputPath = join(tmpdir(), `open-chat-exporter.ms_teams.${Date.now()}.json`);
 
   const proc = Bun.spawn(
     [

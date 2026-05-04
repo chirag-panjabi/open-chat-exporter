@@ -69,7 +69,7 @@ async function readMessages(filePath: string): Promise<Record<string, unknown>[]
 
 async function main(): Promise<void> {
   const fixturePath = 'tests/fixtures/x_twitter/direct-messages.sample.js';
-  const outputPath = join(tmpdir(), `unified-chat-exporter.x_twitter.${Date.now()}.json`);
+  const outputPath = join(tmpdir(), `open-chat-exporter.x_twitter.${Date.now()}.json`);
 
   const proc = Bun.spawn(
     [

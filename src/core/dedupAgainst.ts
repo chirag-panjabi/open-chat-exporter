@@ -110,7 +110,7 @@ export async function createDedupFilter(params: {
 
     const indexPath = join(
         tmpdir(),
-        `unified-chat-exporter.dedup-index.${Date.now()}.${Math.random().toString(16).slice(2)}.sqlite`
+        `open-chat-exporter.dedup-index.${Date.now()}.${Math.random().toString(16).slice(2)}.sqlite`
     );
 
     const db = new Database(indexPath);

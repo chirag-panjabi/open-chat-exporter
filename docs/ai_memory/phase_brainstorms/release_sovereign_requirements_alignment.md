@@ -5,7 +5,7 @@
 **Source:** Sovereign project handoff doc (external input; not a source of truth for this repo)
 
 ## Goal
-Map Sovereign’s expectations to the current Unified Chat Exporter capabilities and decide what to adopt for broad usability.
+Map Sovereign’s expectations to the current Open Chat Exporter capabilities and decide what to adopt for broad usability.
 
 ## What We Already Meet (Today)
 - **Local-first by default:** All offline adapters run locally. (Meta Conversations API adapter is explicitly optional.)
@@ -31,7 +31,7 @@ Map Sovereign’s expectations to the current Unified Chat Exporter capabilities
 - **Binary distribution path:** A documented build + bundling strategy for a “silent background” runner.
 - **Lenient parsing mode:** Add a global `--lenient` (or `--strict/--lenient`) to prefer warnings over fatal errors for parse issues.
 - **Structured reporting:** Add `--report` (human) and/or `--report-json` output summarizing: parsed messages, dropped system, anonymized counts, etc.
-- **Logging controls:** `--quiet` and `--log-format json` for embedding into apps.
+- **Logging controls:** `--quiet` and `--log-format jsonl` for embedding into apps.
 
 ### Likely NOT to Adopt (Or Keep Optional)
 - **Replace the unified schema:** Keep `03_unified_schema_definition.md` as authoritative; don’t downgrade core schema to a minimal per-message shape.

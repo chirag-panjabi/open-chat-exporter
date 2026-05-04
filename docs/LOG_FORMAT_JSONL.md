@@ -18,7 +18,7 @@ This separation is intentional so an integrating app can:
 bun run src/cli/index.ts convert ... --log-format jsonl
 
 # or, for a standalone executable
-./dist/unified-chat-exporter-<os>-<arch> convert ... --log-format jsonl
+./dist/open-chat-exporter-<os>-<arch> convert ... --log-format jsonl
 ```
 
 ### `--quiet`

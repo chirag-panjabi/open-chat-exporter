@@ -121,3 +121,4 @@
 - [x] **Task R7:** Improve reliability + integration controls: lenient parse mode (warn/skip), structured reporting (`--report-json`), and logging controls (`--quiet`, machine-readable logs).
 	- Implemented: `--report-json`, `--quiet`, `--lenient` baseline (WhatsApp TXT: warn + treat invalid header-like lines as continuation), `--log-format jsonl` (machine-readable stderr events)
 	- Remaining: extend lenient behavior to more adapters where feasible
+- [x] **Task R8:** Rename project to **open-chat-exporter** and add an OSI-approved GitHub license (Apache-2.0).
