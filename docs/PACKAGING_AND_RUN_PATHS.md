@@ -22,6 +22,22 @@ Run:
 ```bash
 ./dist/unified-chat-exporter-<os>-<arch> --help
 ./dist/unified-chat-exporter-<os>-<arch> convert --input <path> --platform <PLATFORM> --output out.json
+
+# For host-app IPC integration, emit structured stderr events:
+./dist/unified-chat-exporter-<os>-<arch> convert ... --log-format jsonl 2> run.events.jsonl
+```
+
+Notes:
+- JSONL logging is documented in: [LOG_FORMAT_JSONL.md](LOG_FORMAT_JSONL.md)
+
+Build script options:
+
+```bash
+# Customize output directory/name
+bun run build:exe --outdir dist --name unified-chat-exporter
+
+# On Windows, optional GUI-friendly build (hides console window)
+bun run build:exe --windows-hide-console
 ```
 
 Hermetic defaults:
