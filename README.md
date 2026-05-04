@@ -24,6 +24,8 @@ Show CLI help:
 bun run src/cli/index.ts --help
 ```
 
+Install/run paths (V1 decision): [docs/PACKAGING_AND_RUN_PATHS.md](docs/PACKAGING_AND_RUN_PATHS.md)
+
 ## Supported Inputs (High-Level)
 
 This repo includes streaming adapters and synthetic smoke tests for:

@@ -112,7 +112,7 @@
 - [x] **Task 22.3:** Add synthetic fixtures + smoke test for Android DB reply mapping.
 
 ## Release Readiness (V1)
-- [ ] **Task R1:** Decide packaging approach (Bun compile/single binary vs source-only) and document supported install/run paths.
+- [x] **Task R1:** Decide packaging approach (Bun compile/single binary vs source-only) and document supported install/run paths.
 - [x] **Task R2:** Add a minimal README with: supported inputs per platform, example commands, and safety notes (no PII in repo; media excluded).
 - [x] **Task R3:** Add a "large export" guide: streaming constraints, expected memory profile, and recommended chunking/dedup workflows.
 - [x] **Task R4:** Add a release checklist (version bump, `bun run typecheck/lint/test`, `git status`, fixture-only tests).
