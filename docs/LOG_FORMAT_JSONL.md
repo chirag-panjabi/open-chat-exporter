@@ -80,7 +80,7 @@ Common fields:
 - dedup stats fields (these match the report JSON `dedup` object)
 
 ### `finish`
-Emitted once at the end of a successful run (unless `--quiet`).
+Emitted once at the end of a run (unless `--quiet`).
 
 Common fields:
 - `platform`
@@ -88,6 +88,9 @@ Common fields:
 - `duration_ms` (number)
 - `messages_emitted` (number)
 - `warnings_count` (number)
+
+Notes:
+- You may see `finish` with `success: false` for handled errors (often alongside a `fatal` event).
 
 ### `fatal`
 Emitted on a run-ending error (always emitted, even with `--quiet`).
@@ -100,6 +103,7 @@ Common fields:
 
 Notes:
 - A `fatal` event typically corresponds to a non-zero process exit code.
+- Depending on where the error occurs, `fatal` may be followed by a `finish` event (unless `--quiet`). For uncaught errors, only `fatal` is guaranteed.
 
 ## Example: capture JSONL to a file
 

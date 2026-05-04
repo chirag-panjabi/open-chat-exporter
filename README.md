@@ -26,6 +26,32 @@ bun run src/cli/index.ts --help
 
 Install/run paths (V1 decision): [docs/PACKAGING_AND_RUN_PATHS.md](docs/PACKAGING_AND_RUN_PATHS.md)
 
+## Integration Quickstart (Host Apps)
+
+If you are integrating this tool into a desktop/mobile app (IPC-style), the recommended path is:
+
+1) Build the standalone executable:
+
+```bash
+bun install
+bun run build:exe
+```
+
+2) Run conversions with **structured stderr events** and data written to a file:
+
+```bash
+./dist/unified-chat-exporter-<os>-<arch> convert \
+  --input <path> \
+  --platform <PLATFORM> \
+  --output out.json \
+  --output-format json \
+  --output-profile minimal \
+  --log-format jsonl \
+  2> run.events.jsonl
+```
+
+3) Parse `run.events.jsonl` line-by-line (JSONL). Contract and event types: [docs/LOG_FORMAT_JSONL.md](docs/LOG_FORMAT_JSONL.md)
+
 ## Supported Inputs (High-Level)
 
 This repo includes streaming adapters and synthetic smoke tests for:
