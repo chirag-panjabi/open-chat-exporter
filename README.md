@@ -54,6 +54,7 @@ Schema source of truth: [03_unified_schema_definition.md](03_unified_schema_defi
 - `--lenient`: best-effort parsing where feasible (currently most useful for line-based inputs like WhatsApp `.txt`)
 - `--report-json <path>`: writes a small JSON run report (includes warning counts)
 - `--quiet`: suppress non-error stderr output
+- `--log-format jsonl`: emit warnings/progress/fatal events as JSONL on stderr (for UI/IPC)
 
 ## Large Exports
 

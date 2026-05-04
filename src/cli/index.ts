@@ -46,6 +46,7 @@ import YAML from 'yaml';
 
 type OutputFormat = 'json' | 'md' | 'csv';
 type OutputProfile = 'canonical' | 'messages-array' | 'minimal';
+type LogFormat = 'text' | 'jsonl';
 
 type Args = {
   command?: string;
@@ -56,6 +57,7 @@ type Args = {
   reportJson?: string;
   quiet?: boolean;
   lenient?: boolean;
+  logFormat?: string;
   chunkBy?: string;
   overwrite?: boolean;
   dedupAgainst?: string;
@@ -131,6 +133,10 @@ function parseArgs(argv: string[]): Args {
         break;
       case '--lenient':
         args.lenient = value == null ? true : value.trim().toLowerCase() !== 'false';
+        if (consumedNext) i++;
+        break;
+      case '--log-format':
+        args.logFormat = value;
         if (consumedNext) i++;
         break;
       case '--platform':
@@ -237,6 +243,95 @@ function normalizeChunkBy(raw?: string): 'none' | ChunkBy {
   return 'none';
 }
 
+function normalizeLogFormat(raw?: string): LogFormat {
+  if (!raw) return 'text';
+  const key = raw.trim().toLowerCase();
+  if (key === 'jsonl' || key === 'json-lines' || key === 'jsonlines') return 'jsonl';
+  return 'text';
+}
+
+type LogEventNoTs = {
+  type: 'warning' | 'progress' | 'fatal' | 'info' | 'dedup' | 'start' | 'finish';
+  code?: string;
+  message?: string;
+} & Record<string, unknown>;
+
+type LogEvent = LogEventNoTs & { ts: string };
+
+function createStderrLogger(params: { format: LogFormat; quiet: boolean }) {
+  const writeLine = (line: string) => {
+    process.stderr.write(line.endsWith('\n') ? line : `${line}\n`);
+  };
+
+  const emit = (event: LogEventNoTs) => {
+    const full: LogEvent = { ...event, ts: new Date().toISOString() };
+    if (params.format === 'jsonl') {
+      writeLine(JSON.stringify(full));
+      return;
+    }
+
+    // text fallback (human-readable)
+    if (full.type === 'warning') {
+      writeLine(`WARN ${String(full.code ?? 'UNKNOWN')}: ${String(full.message ?? '')}`.trimEnd());
+      return;
+    }
+    if (full.type === 'fatal') {
+      if (typeof full.stack === 'string' && full.stack.trim() !== '') {
+        writeLine(full.stack);
+      } else {
+        writeLine(String(full.message ?? 'Fatal error'));
+      }
+      if (typeof full.usage === 'string' && full.usage.trim() !== '') writeLine(`\n${full.usage}`);
+      return;
+    }
+    if (full.type === 'dedup') {
+      if (typeof full.text === 'string' && full.text.trim() !== '') writeLine(String(full.text));
+      return;
+    }
+    if (full.type === 'info') {
+      if (typeof full.message === 'string' && full.message.trim() !== '') writeLine(String(full.message));
+      return;
+    }
+
+    // For other event types in text mode, avoid noisy output.
+  };
+
+  return {
+    event: (e: LogEventNoTs) => {
+      const isFatal = e.type === 'fatal';
+      if (params.quiet && !isFatal) return;
+      emit(e);
+    },
+    warn: (code: string, message: string, extra?: Record<string, unknown>) => {
+      if (params.quiet) return;
+      emit({ type: 'warning', code, message, ...(extra ?? {}) });
+    },
+    info: (message: string, extra?: Record<string, unknown>) => {
+      if (params.quiet) return;
+      emit({ type: 'info', message, ...(extra ?? {}) });
+    },
+    fatal: (message: string, extra?: Record<string, unknown>) => {
+      emit({ type: 'fatal', message, ...(extra ?? {}) });
+    },
+    progress: (extra: Record<string, unknown>) => {
+      if (params.quiet) return;
+      emit({ type: 'progress', ...extra });
+    },
+    start: (extra: Record<string, unknown>) => {
+      if (params.quiet) return;
+      emit({ type: 'start', ...extra });
+    },
+    finish: (extra: Record<string, unknown>) => {
+      if (params.quiet) return;
+      emit({ type: 'finish', ...extra });
+    },
+    dedup: (extra: Record<string, unknown>) => {
+      if (params.quiet) return;
+      emit({ type: 'dedup', ...extra });
+    },
+  };
+}
+
 async function ensureDir(path: string): Promise<void> {
   try {
     const s = await stat(path);
@@ -272,7 +367,10 @@ function usage(): string {
     'Unified Chat Exporter (WIP)',
     '',
     'Usage:',
+    '  <executable> convert --input <path> --platform <PLATFORM> [--output <path>]',
     '  bun run src/cli/index.ts convert --input <path> --platform <PLATFORM> [--output <path>]',
+    '',
+    'Where <executable> is the standalone binary path (e.g., ./dist/unified-chat-exporter-macos-arm64)',
     '',
     'Options:',
     '  --input <path>             Path to an export file (or folder for future adapters)',
@@ -286,6 +384,7 @@ function usage(): string {
     '  --report-json <path>       Write a small JSON run report (messages emitted, dedup stats, timings)',
     '  --quiet                    Suppress non-error stderr output (e.g., dedup summary)',
     '  --lenient                  Best-effort parsing: warn/skip when feasible instead of crashing',
+    '  --log-format <fmt>         text|jsonl (default: text; formats stderr events only)',
     '  --chat-name <name>         Overrides chat_info.chat_name (default: derived from input filename)',
     '  --chat-type <type>         DIRECT|GROUP|CHANNEL (default: GROUP)',
     '  --participant-count <n>    Optional participant count',
@@ -334,6 +433,8 @@ async function sniffSqliteHeader(file: ReturnType<typeof Bun.file>): Promise<boo
 
 async function main(): Promise<void> {
   const args = parseArgs(process.argv.slice(2));
+  const logFormat = normalizeLogFormat(args.logFormat);
+  const log = createStderrLogger({ format: logFormat, quiet: Boolean(args.quiet) });
 
   if (!args.command || args.command === '--help' || args.command === '-h') {
     process.stdout.write(`${usage()}\n`);
@@ -342,19 +443,19 @@ async function main(): Promise<void> {
   }
 
   if (args.command !== 'convert') {
-    process.stderr.write(`Unknown command: ${args.command}\n\n${usage()}\n`);
+    log.fatal(`Unknown command: ${args.command}`, { code: 'UNKNOWN_COMMAND', usage: usage() });
     process.exitCode = 2;
     return;
   }
 
   if (!args.input) {
-    process.stderr.write(`Missing required flag: --input\n\n${usage()}\n`);
+    log.fatal('Missing required flag: --input', { code: 'MISSING_INPUT', usage: usage() });
     process.exitCode = 2;
     return;
   }
 
   if (!args.platform) {
-    process.stderr.write(`Missing required flag: --platform\n\n${usage()}\n`);
+    log.fatal('Missing required flag: --platform', { code: 'MISSING_PLATFORM', usage: usage() });
     process.exitCode = 2;
     return;
   }
@@ -366,7 +467,9 @@ async function main(): Promise<void> {
   const chunkBy = normalizeChunkBy(args.chunkBy);
 
   if (outputProfile !== 'canonical' && outputFormat !== 'json') {
-    process.stderr.write(`--output-profile ${outputProfile} is only supported for --output-format json\n`);
+    log.fatal(`--output-profile ${outputProfile} is only supported for --output-format json`, {
+      code: 'INVALID_OUTPUT_PROFILE',
+    });
     process.exitCode = 2;
     return;
   }
@@ -374,7 +477,7 @@ async function main(): Promise<void> {
   let metaApiConfig: MetaConversationsApiConfig | undefined;
 
   if (platform === Platform.IMESSAGE && !args.chatGuid) {
-    process.stderr.write(`Missing required flag for IMESSAGE: --chat-guid\n\n${usage()}\n`);
+    log.fatal('Missing required flag for IMESSAGE: --chat-guid', { code: 'MISSING_CHAT_GUID', usage: usage() });
     process.exitCode = 2;
     return;
   }
@@ -382,7 +485,7 @@ async function main(): Promise<void> {
   const file = Bun.file(args.input);
   const exists = await file.exists();
   if (!exists) {
-    process.stderr.write(`Input path does not exist: ${args.input}\n`);
+    log.fatal('Input path does not exist', { code: 'INPUT_NOT_FOUND' });
     process.exitCode = 2;
     return;
   }
@@ -403,9 +506,7 @@ async function main(): Promise<void> {
   input.onWarning = (warning) => {
     warningsCount++;
     warningCountsByCode[warning.code] = (warningCountsByCode[warning.code] ?? 0) + 1;
-    if (!args.quiet) {
-      process.stderr.write(`WARN ${warning.code}: ${warning.message}\n`);
-    }
+    log.warn(warning.code, warning.message, { platform: String(platform) });
   };
 
   const isWhatsAppSqlite = platform === Platform.WHATSAPP ? await sniffSqliteHeader(file) : false;
@@ -424,9 +525,9 @@ async function main(): Promise<void> {
     }
 
     if (whatsAppSqliteKind === 'unknown') {
-      process.stderr.write(
-        'Unsupported WHATSAPP SQLite schema. Expected iOS ChatStorage.sqlite (ZWAMESSAGE/ZWACHATSESSION) ' +
-        "or Android msgstore.db (messages table).\n"
+      log.fatal(
+        'Unsupported WHATSAPP SQLite schema. Expected iOS ChatStorage.sqlite (ZWAMESSAGE/ZWACHATSESSION) or Android msgstore.db (messages table).',
+        { code: 'UNSUPPORTED_WHATSAPP_SQLITE_SCHEMA' }
       );
       process.exitCode = 3;
       return;
@@ -477,10 +578,10 @@ async function main(): Promise<void> {
                                   ? new NoopAdapter()
                                   : null;
   if (!adapter) {
-    process.stderr.write(
-      `Adapter not implemented for platform: ${platform}\n` +
-      `For now, run with --platform UNKNOWN to test streaming output.\n`
-    );
+    log.fatal(`Adapter not implemented for platform: ${platform}`, {
+      code: 'ADAPTER_NOT_IMPLEMENTED',
+      note: 'Run with --platform UNKNOWN to test streaming output.',
+    });
     process.exitCode = 3;
     return;
   }
@@ -492,14 +593,14 @@ async function main(): Promise<void> {
   const participantCount = args.participantCount ? Number(args.participantCount) : undefined;
 
   if (args.participantCount && (Number.isNaN(participantCount) || participantCount! < 0)) {
-    process.stderr.write(`Invalid --participant-count: ${args.participantCount}\n`);
+    log.fatal('Invalid --participant-count', { code: 'INVALID_PARTICIPANT_COUNT' });
     process.exitCode = 2;
     return;
   }
 
   const minContentLength = args.minContentLength ? Number(args.minContentLength) : undefined;
   if (args.minContentLength && (Number.isNaN(minContentLength) || minContentLength! < 0)) {
-    process.stderr.write(`Invalid --min-content-length: ${args.minContentLength}\n`);
+    log.fatal('Invalid --min-content-length', { code: 'INVALID_MIN_CONTENT_LENGTH' });
     process.exitCode = 2;
     return;
   }
@@ -552,9 +653,34 @@ async function main(): Promise<void> {
 
   const startedAt = Date.now();
   let messagesEmitted = 0;
+  log.start({
+    platform: String(platform),
+    output_format: outputFormat,
+    output_profile: outputProfile,
+    chunk_by: chunkBy,
+    lenient: Boolean(args.lenient),
+    dedup_enabled: Boolean(args.dedupAgainst),
+    log_format: logFormat,
+  });
+
+  let lastProgressAt = startedAt;
+  let lastProgressCount = 0;
   const countedMessages: AsyncIterable<IUnifiedMessage> = (async function* () {
     for await (const m of messages) {
       messagesEmitted++;
+
+      // Sovereign IPC: emit periodic progress events in JSONL mode.
+      if (logFormat === 'jsonl' && !args.quiet) {
+        const now = Date.now();
+        const timeDue = now - lastProgressAt >= 1000;
+        const countDue = messagesEmitted - lastProgressCount >= 1000;
+        if (messagesEmitted === 1 || timeDue || countDue) {
+          log.progress({ platform: String(platform), messages_emitted: messagesEmitted });
+          lastProgressAt = now;
+          lastProgressCount = messagesEmitted;
+        }
+      }
+
       yield m;
     }
   })();
@@ -565,12 +691,15 @@ async function main(): Promise<void> {
   try {
     if (chunkBy !== 'none') {
       if (!args.output || args.output.trim() === '' || args.output === '-') {
-        process.stderr.write(`Chunking mode requires --output <dir> (stdout is not supported)\n\n${usage()}\n`);
+        log.fatal('Chunking mode requires --output <dir> (stdout is not supported)', {
+          code: 'CHUNKING_REQUIRES_OUTPUT_DIR',
+          usage: usage(),
+        });
         process.exitCode = 2;
         return;
       }
       if (outputFormat === 'csv') {
-        process.stderr.write(`Chunking is not supported for --output-format csv\n`);
+        log.fatal('Chunking is not supported for --output-format csv', { code: 'CHUNKING_UNSUPPORTED_FOR_CSV' });
         process.exitCode = 2;
         return;
       }
@@ -647,6 +776,14 @@ async function main(): Promise<void> {
     throw err;
   } finally {
     const finishedAt = Date.now();
+    log.finish({
+      platform: String(platform),
+      success,
+      duration_ms: finishedAt - startedAt,
+      messages_emitted: messagesEmitted,
+      warnings_count: warningsCount,
+    });
+
     const report = {
       success,
       started_at: new Date(startedAt).toISOString(),
@@ -670,7 +807,13 @@ async function main(): Promise<void> {
     };
 
     if (closeDedup) closeDedup();
-    if (!args.quiet && dedupStats) process.stderr.write(`${formatDedupStats(dedupStats)}\n`);
+    if (dedupStats) {
+      if (logFormat === 'jsonl') {
+        log.dedup({ platform: String(platform), ...dedupStats });
+      } else if (!args.quiet) {
+        log.dedup({ text: `${formatDedupStats(dedupStats)}\n` });
+      }
+    }
 
     if (args.reportJson && args.reportJson.trim() !== '') {
       try {
@@ -683,7 +826,11 @@ async function main(): Promise<void> {
 }
 
 main().catch((err) => {
-  const message = err instanceof Error ? (err.stack ?? err.message) : String(err);
-  process.stderr.write(`${message}\n`);
+  const args = parseArgs(process.argv.slice(2));
+  const logFormat = normalizeLogFormat(args.logFormat);
+  const log = createStderrLogger({ format: logFormat, quiet: Boolean(args.quiet) });
+  const message = err instanceof Error ? (err.message || 'Fatal error') : String(err);
+  const stack = err instanceof Error ? err.stack : undefined;
+  log.fatal(message, { code: 'UNCAUGHT_ERROR', stack });
   process.exitCode = 1;
 });

@@ -1,5 +1,5 @@
 # Active Context for AI Agents
-**Last Updated:** April 30, 2026
+**Last Updated:** May 4, 2026
 
 ## Project Identity
 **Unified Chat Exporter (V1: TypeScript)**
@@ -52,6 +52,7 @@ We now have end-to-end conversion with streaming adapters and smoke tests for:
 - **Next Phase (Scrubbing + Outputs):** Implement a streaming scrub pipeline (identity resolution + optional anonymization + filters) and add Markdown/CSV writers behind `--output-format`.
 - **Phase 20 (Output Chunking):** Chosen contract is **directory-mode** output when chunking is enabled. Filenames use a non-PII stable identifier: `<platform>.<chatId>.chunk.<chunkKey>.<ext>` where `chatId` is a short prefix of `sha256(platform + "\n" + chat_type + "\n" + chat_name)`. Collision policy is fail-fast by default, with `--overwrite` to replace existing chunk files.
 - **SDK / Dependency Mode (Planned):** Keep the core pipeline usable as a library (stable programmatic API + package exports) so other products can embed parsing/normalization without re-implementing adapters.
+- **Sovereign Integration Boundary (V1):** Added a standalone executable build (`bun build --compile`) and a machine-readable stderr event stream (`--log-format jsonl`) for IPC-style integration.
 
 ## Current Status
 - Phase 19 (Scrubbing + Markdown/CSV outputs) is implemented and covered by smoke tests.
@@ -64,5 +65,5 @@ We now have end-to-end conversion with streaming adapters and smoke tests for:
 ## Next Focus
 - V1 core scope is implemented through Phase 22.
 - Release readiness: packaging/distribution + README/docs (streaming-safe, no-PII).
-- Integration ergonomics for host apps (e.g., Sovereign): output profiles (minimal JSON array), SDK/dependency entrypoint, and structured reporting/logging.
+- Integration ergonomics for host apps (e.g., Sovereign): output profiles (minimal JSON array), SDK/dependency entrypoint, and structured reporting/logging (including JSONL stderr events).
 - Next: extend `--lenient` warn/skip behavior beyond WhatsApp TXT (where feasible), and decide if we need machine-readable per-warning logs beyond `--report-json`.

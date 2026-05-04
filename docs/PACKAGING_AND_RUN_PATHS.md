@@ -2,13 +2,35 @@
 
 ## Decision (V1)
 
-**V1 is source-first.** The supported and tested execution path is running the CLI from source using **Bun**.
+**V1 supports standalone executables.** The primary integration path for consumer apps (e.g., Sovereign) is running a compiled, zero-dependency binary built via `bun build --compile`.
 
-A single-file binary build can be explored later, but it is not the primary supported distribution path in V1.
+Running the CLI from source using **Bun** remains supported for development.
 
 ## Supported Run Paths
 
-### 1) Run the CLI from source (recommended)
+### 1) Standalone executable (recommended for consumer apps)
+
+Build (outputs to `dist/`, which is gitignored):
+
+```bash
+bun install
+bun run build:exe
+```
+
+Run:
+
+```bash
+./dist/unified-chat-exporter-<os>-<arch> --help
+./dist/unified-chat-exporter-<os>-<arch> convert --input <path> --platform <PLATFORM> --output out.json
+```
+
+Hermetic defaults:
+- The build disables autoloading of `.env`, `bunfig.toml`, `package.json`, and `tsconfig.json` at runtime.
+
+Note on multi-arch:
+- `bun build --compile` builds for the **current** OS/arch. To produce macOS arm64/x64 and Windows x64 binaries, build on each target (e.g., CI matrix).
+
+### 2) Run the CLI from source (dev)
 
 ```bash
 bun install
@@ -29,7 +51,7 @@ Convenience script:
 bun run cli --help
 ```
 
-### 2) Use as a library (in-process)
+### 3) Use as a library (in-process)
 
 This repo exposes stable entrypoints via `package.json` `exports`:
 

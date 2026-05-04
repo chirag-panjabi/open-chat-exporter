@@ -119,5 +119,5 @@
 - [x] **Task R5:** Support SDK/dependency usage (stable programmatic API + package exports) so other products can embed parsing/normalization without shelling out to the CLI.
 - [x] **Task R6:** Add output profiles for strict downstream schemas (e.g., a minimal JSON array profile) without changing the canonical unified wrapper schema.
 - [x] **Task R7:** Improve reliability + integration controls: lenient parse mode (warn/skip), structured reporting (`--report-json`), and logging controls (`--quiet`, machine-readable logs).
-	- Implemented: `--report-json`, `--quiet`, `--lenient` baseline (WhatsApp TXT: warn + treat invalid header-like lines as continuation)
-	- Remaining: extend lenient behavior to more adapters where feasible; decide whether per-warning machine-readable logs are needed beyond the report JSON
+	- Implemented: `--report-json`, `--quiet`, `--lenient` baseline (WhatsApp TXT: warn + treat invalid header-like lines as continuation), `--log-format jsonl` (machine-readable stderr events)
+	- Remaining: extend lenient behavior to more adapters where feasible
