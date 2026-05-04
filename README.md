@@ -57,6 +57,10 @@ Schema source of truth: [03_unified_schema_definition.md](03_unified_schema_defi
 
 Recommended chunking + dedup workflows: [docs/LARGE_EXPORT_GUIDE.md](docs/LARGE_EXPORT_GUIDE.md)
 
+## Release
+
+Release checklist: [docs/RELEASE_CHECKLIST.md](docs/RELEASE_CHECKLIST.md)
+
 ## Safety (Open Source)
 
 This project handles highly sensitive personal data.

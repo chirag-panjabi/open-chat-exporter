@@ -115,7 +115,7 @@
 - [ ] **Task R1:** Decide packaging approach (Bun compile/single binary vs source-only) and document supported install/run paths.
 - [x] **Task R2:** Add a minimal README with: supported inputs per platform, example commands, and safety notes (no PII in repo; media excluded).
 - [x] **Task R3:** Add a "large export" guide: streaming constraints, expected memory profile, and recommended chunking/dedup workflows.
-- [ ] **Task R4:** Add a release checklist (version bump, `bun run typecheck/lint/test`, `git status`, fixture-only tests).
+- [x] **Task R4:** Add a release checklist (version bump, `bun run typecheck/lint/test`, `git status`, fixture-only tests).
 - [x] **Task R5:** Support SDK/dependency usage (stable programmatic API + package exports) so other products can embed parsing/normalization without shelling out to the CLI.
 - [x] **Task R6:** Add output profiles for strict downstream schemas (e.g., a minimal JSON array profile) without changing the canonical unified wrapper schema.
 - [x] **Task R7:** Improve reliability + integration controls: lenient parse mode (warn/skip), structured reporting (`--report-json`), and logging controls (`--quiet`, machine-readable logs).
