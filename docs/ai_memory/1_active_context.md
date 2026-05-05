@@ -8,6 +8,7 @@
 Core functionality through Phase 22 is implemented; current work is packaging, documentation, and integration ergonomics.
 
 - May 5, 2026: README updated to reflect canonical output wrapper key `export_meta`.
+- May 5, 2026: README expanded into a public-facing GitHub README (install/run/examples/safety).
 
 We now have end-to-end conversion with streaming adapters and smoke tests for:
 - Discord JSON (`DISCORD`)
