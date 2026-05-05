@@ -69,8 +69,8 @@ This repo includes streaming adapters and synthetic smoke tests for:
 
 - `--output-format json|md|csv` (default: `json`)
 - `--output-profile canonical|messages-array|minimal` (JSON only)
-  - `canonical`: `{ meta, chat_info, messages: [...] }` (default)
-  - `messages-array`: just `messages: [...]` as a root array
+  - `canonical`: `{ export_meta, chat_info, messages: [...] }` (default)
+  - `messages-array`: root JSON array of unified message objects (the same shape as `messages[]` items in `canonical`)
   - `minimal`: root JSON array of minimal message objects for strict downstream consumers
 
 Schema source of truth: [03_unified_schema_definition.md](03_unified_schema_definition.md)

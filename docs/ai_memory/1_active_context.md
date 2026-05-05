@@ -1,11 +1,13 @@
 # Active Context for AI Agents
-**Last Updated:** May 4, 2026
+**Last Updated:** May 5, 2026
 
 ## Project Identity
 **Open Chat Exporter (V1: TypeScript)**
 
 ## Current Phase: Release Readiness (V1)
 Core functionality through Phase 22 is implemented; current work is packaging, documentation, and integration ergonomics.
+
+- May 5, 2026: README updated to reflect canonical output wrapper key `export_meta`.
 
 We now have end-to-end conversion with streaming adapters and smoke tests for:
 - Discord JSON (`DISCORD`)
